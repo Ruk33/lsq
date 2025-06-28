@@ -45,6 +45,8 @@ function command(name, props) {
 
     command_to_execute(props)
 
+    state.last_command = { name, props, }
+
     const new_version = JSON.stringify(state)
 
     console.log("command executed", name, props)

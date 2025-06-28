@@ -18,7 +18,7 @@ let state = {
         submitting: false,
     },
 
-    active_element: { id: "", selection_start: 0, selection_end: 0, },
+    last_command: { name: "", props: {} },
 }
 
 const commands = {
@@ -26,27 +26,51 @@ const commands = {
         state.value++
     },
 
-    "increase-async": function(ms) {
+    "decrease": function() {
+        state.value--
+    },
+
+    "increase async": function(ms) {
         setTimeout(function() {
             window.command("increase")
         }, ms)
     },
 
+    "change user": function(user) {
+        state.user = user
+    },
+
+    "change password": function(password) {
+        state.password = password
+    },
+
+    "show dialog": function() {
+        state.is_dialog_visible = true
+    },
+
+    "hide dialog": function() {
+        state.is_dialog_visible = false
+    },
+
     // ...
 }
 
-function button({ color = "red" }) {
-    if (color == "blue")
-        return `bro, do you even?`
+function simple_button({ color = "red" }) {
     return `
-        <button type="button" onclick="window.command('increase')" style="background-color: ${color}">ok</button>
+        <button 
+            type="button" 
+            onclick="window.command('increase')" 
+            style="background-color: ${color}"
+        >
+            ok
+        </button>
     `
 }
 
 function dialog({ visible = false, close_command = "" }) {
     return `
         <div style="position: absolute; top: 200px; left: 200px; border: 2px solid black; display: ${visible ? "block" : "none"}">
-            Hello! <button type="button" onclick="window.command('${close_command}')">Close me bro!</button>
+            Hello! <button type="button" onclick="window.command('${close_command}')">Close me!</button>
         </div>
     `
 }
@@ -74,17 +98,33 @@ function app() {
     return `
         <div>
             <div>
-                ${registration_form({})}
-                ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
-                <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
-                <span>value: ${state.value}</span>
-                <input id="user" value="${state.user}" oninput="window.command('change-user', event.target.value)" />
-                <input id="password" value="${state.password}" oninput="window.command('change-password', event.target.value)" onfocus="console.log('focus!')" />
-                <button onclick="window.command('increase')">increase</button>
-                <button onclick="window.command('decrease')">decrease</button>
-                <button onclick="window.command('increase-async', 5000)">increase after 5 seconds</button>
-                ${button({})} ${button({ color: "blue" })}
+                <div>
+                    ${dialog({ visible: state.is_dialog_visible, close_command: "hide dialog" })}
+                    <button onclick="window.command('show dialog')">Show dialog</button>
+                </div>
+
+                <div>
+                    <span>value: ${state.value}</span>
+                    <button onclick="window.command('increase')">increase</button>
+                    <button onclick="window.command('decrease')">decrease</button>
+                    <button onclick="window.command('increase async', 5000)">increase after 5 seconds</button>
+                </div>
+
+                <div>
+                    <input id="user" value="${state.user}" oninput="window.command('change user', event.target.value)" />
+                    <input id="password" value="${state.password}" oninput="window.command('change password', event.target.value)" onfocus="console.log('focus!')" />
+                </div>
+                
+                <div>
+                    <div>${simple_button({})}</div>
+                    <div>${simple_button({ color: "blue" })}</div>
+                </div>
+
+                <div>
+                    ${registration_form({})}
+                </div>
             </div>
+
             <div>
                 <button onclick="window.command('undo')">undo</button>
                 <button onclick="window.command('redo')">redo</button>
