@@ -106,6 +106,9 @@ function update_element(parent, new_content) {
         else if (old_child.tagName !== new_child.tagName)
             old_child.innerHTML = new_child.innerHTML
         else {
+            const selection_start = old_child.selectionStart
+            const selection_end = old_child.selectionEnd
+
             // remove attributes that are not present in the new node version.
             for (const { name } of old_child.attributes) {
                 if (!new_child.hasAttribute(name))
@@ -123,6 +126,9 @@ function update_element(parent, new_content) {
 
             if (!old_child.children.length && old_child.innerHTML !== new_child.innerHTML)
                 old_child.innerHTML = new_child.innerHTML
+
+            if (old_child.setSelectionRange)
+                old_child.setSelectionRange(selection_start, selection_end)
 
             update_element(old_child, new_child)
         }
