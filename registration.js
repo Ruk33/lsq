@@ -1,4 +1,4 @@
-function registration_set_username(username) {
+function registration_set_username(username = "") {
     username = username.toUpperCase()
 
     state.registration.username = username
@@ -6,13 +6,13 @@ function registration_set_username(username) {
     state.registration.errors.username = registration_validate_username(username)
 }
 
-function registration_set_password(password) {
+function registration_set_password(password = "") {
     state.registration.password = password
 
     state.registration.errors.password = registration_validate_password(password)
 }
 
-function registration_set_confirm_password(confirm_password) {
+function registration_set_confirm_password(confirm_password = "") {
     const password = state.registration.password
 
     state.registration.confirm_password = confirm_password
@@ -54,7 +54,7 @@ function registration_error() {
     state.registration.submitting = false;
 }
 
-function registration_validate_username(username) {
+function registration_validate_username(username = "") {
     return [
         missing(username) ? "The username is required!" : "",
         undersized(username, 2) ? "The username must be at least 2 characters long" : "",
@@ -62,7 +62,7 @@ function registration_validate_username(username) {
     ].filter(Boolean)
 }
 
-function registration_validate_password(password) {
+function registration_validate_password(password = "") {
     return [
         missing(password) ? "The password is required!" : "",
         undersized(password, 2) ? "The password must be at least 2 characters long" : "",
@@ -70,7 +70,7 @@ function registration_validate_password(password) {
     ].filter(Boolean)
 }
 
-function registration_validate_confirm_password(password, confirm_password) {
+function registration_validate_confirm_password(password = "", confirm_password = "") {
     return [
         unequal(password, confirm_password) ? "The passwords do not match" : "",
     ].filter(Boolean)
