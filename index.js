@@ -45,7 +45,9 @@ const commands = {
     },
 
     "registration_set_username": function(username) {
-        state.registration.username = username.toUpperCase()
+        username = username.toUpperCase()
+
+        state.registration.username = username
 
         state.registration.errors.username = registration_validate_username(username)
     },

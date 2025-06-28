@@ -99,17 +99,14 @@ function update_element(parent, new_content) {
             for (const { name, value } of new_child.attributes) {
                 const old_value = old_child.getAttribute(name)
 
-                if (name === "disabled")
-                    old_child[name] = value !== false
-                else if (name === "value")
-                    old_child[name] = value
-                else if (old_value !== value)
+                if (name === "value")
+                    old_child.value = value
+                if (old_value !== value)
                     old_child.setAttribute(name, value)
             }
 
-            // update the text content if required.
-            if (old_child.childNodes.length === 1 && old_child.childNodes[0].nodeType === Node.TEXT_NODE)
-                old_child.textContent = new_child.textContent;
+            if (!old_child.children.length)
+                old_child.innerHTML = new_child.innerHTML
 
             update_element(old_child, new_child)
         }
