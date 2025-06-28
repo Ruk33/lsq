@@ -124,11 +124,6 @@ function app() {
                     ${registration_form({})}
                 </div>
             </div>
-
-            <div>
-                <button onclick="window.command('undo')">undo</button>
-                <button onclick="window.command('redo')">redo</button>
-            </div>
         </div>
     `
 }

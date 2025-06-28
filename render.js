@@ -6,8 +6,13 @@ function undo() {
     if (state_history_index - 1 < 0)
         return
 
+    console.log("undo called")
+    console.log("state before calling undo", state)
+
     state_history_index--
     state = state_history[state_history_index]
+
+    console.log("state after  calling undo", state)
 
     render()
 }
@@ -16,24 +21,18 @@ function redo() {
     if (state_history_index + 1 >= state_history.length)
         return
 
+    console.log("redo called")
+    console.log("state before calling redo", state)
+
     state_history_index++
     state = state_history[state_history_index]
+
+    console.log("state after  calling redo", state)
 
     render()
 }
 
 function command(name, props) {
-    switch (name) {
-    case "undo":
-        undo()
-        return
-    case "redo":
-        redo()
-        return
-    default:
-        break
-    }
-
     const command_to_execute = commands[name]
 
     if (!command_to_execute) {
@@ -119,4 +118,45 @@ function update_element(parent, new_content) {
     }
 }
 
-setTimeout(render, 1)
+function install_undo_redo_hotkeys() {
+    const undo_hotkey = "z"
+
+    const redo_hotkey = "y"
+
+    window.addEventListener("keydown", function(e) {
+        const ctrl = e.ctrlKey
+
+        if (!ctrl)
+            return
+
+        const key_pressed = e.key
+
+        if (key_pressed === undo_hotkey) {
+            e.preventDefault()
+
+            console.log("!!")
+            console.log(`!! UNDO TRIGGERED WITH CTRL + ${undo_hotkey} (EVENT PREVENT DEFAULT CALLED)`)
+            console.log("!!")
+
+            undo()
+        }
+
+        if (key_pressed === redo_hotkey) {
+            e.preventDefault()
+
+            console.log("!!")
+            console.log(`!! REDO TRIGGERED WITH CTRL + ${redo_hotkey} (EVENT PREVENT DEFAULT CALLED)`)
+            console.log("!!")
+
+            redo()
+        }
+    })
+}
+
+function init() {
+    render()
+
+    install_undo_redo_hotkeys()
+}
+
+setTimeout(init, 1)
