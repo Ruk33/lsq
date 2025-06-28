@@ -43,21 +43,13 @@ const commands = {
     "registration_set_username": function(username) {
         state.registration.username = username
 
-        state.registration.errors.username = [
-            missing(username) ? "The username is required!" : "",
-            undersized(username, 2) ? "The username must be at least 2 characters long" : "",
-            oversized(username, 10) ? "The username can't be longer than 10 characters" : "",
-        ].filter(Boolean)
+        state.registration.errors.username = registration_validate_username(username)
     },
 
     "registration_set_password": function(password) {
         state.registration.password = password
 
-        state.registration.errors.password = [
-            missing(password) ? "The password is required!" : "",
-            undersized(password, 2) ? "The password must be at least 2 characters long" : "",
-            oversized(password, 10) ? "The password can't be longer than 10 characters" : "",
-        ].filter(Boolean)
+        state.registration.errors.password = registration_validate_password(password)
     },
 
     "registration_set_confirm_password": function(confirm_password) {
@@ -65,38 +57,23 @@ const commands = {
 
         state.registration.confirm_password = confirm_password
 
-        state.registration.errors.confirm_password = [
-            unequal(password, confirm_password) ? "The passwords do not match" : "",
-        ].filter(Boolean)
+        state.registration.errors.confirm_password = registration_validate_confirm_password(password, confirm_password)
     },
 
     "registration_submit": function() {
         if (state.registration.submitting)
             return
 
-        state.registration.errors.username = [
-            missing(state.registration.username) ? "The username is required!" : "",
-            undersized(state.registration.username, 2) ? "The username must be at least 2 characters long" : "",
-            oversized(state.registration.username, 10) ? "The username can't be longer than 10 characters" : "",
-        ].filter(Boolean)
+        state.registration.errors.username = registration_validate_username(state.registration.username)
 
-        state.registration.errors.password = [
-            missing(state.registration.password) ? "The password is required!" : "",
-            undersized(state.registration.password, 2) ? "The password must be at least 2 characters long" : "",
-            oversized(state.registration.password, 10) ? "The password can't be longer than 10 characters" : "",
-        ].filter(Boolean)
+        state.registration.errors.password = registration_validate_password(state.registration.password)
 
-        state.registration.errors.confirm_password = [
-            unequal(state.registration.password, state.registration.confirm_password) ? "The passwords do not match" : "",
-        ].filter(Boolean)
+        state.registration.errors.confirm_password = registration_validate_confirm_password(
+            state.registration.password, 
+            state.registration.confirm_password
+        )
 
-        const invalid = Boolean(
-            state.registration.errors.username.length ||
-            state.registration.errors.password.length ||
-            state.registration.errors.confirm_password.length
-        );
-
-        if (invalid)
+        if (invalid(state.registration.errors))
             return
 
         state.registration.submitting = true
@@ -118,36 +95,31 @@ const commands = {
     },
 }
 
+function registration_validate_username(username) {
+    return [
+        missing(username) ? "The username is required!" : "",
+        undersized(username, 2) ? "The username must be at least 2 characters long" : "",
+        oversized(username, 10) ? "The username can't be longer than 10 characters" : "",
+    ].filter(Boolean)
+}
+
+function registration_validate_password(password) {
+    return [
+        missing(password) ? "The password is required!" : "",
+        undersized(password, 2) ? "The password must be at least 2 characters long" : "",
+        oversized(password, 10) ? "The password can't be longer than 10 characters" : "",
+    ].filter(Boolean)
+}
+
+function registration_validate_confirm_password(password, confirm_password) {
+    return [
+        unequal(password, confirm_password) ? "The passwords do not match" : "",
+    ].filter(Boolean)
+}
+
 const state_history = [JSON.parse(JSON.stringify(state))]
 
 let state_history_index = 0
-
-function missing(value) {
-    return !Boolean(value)
-}
-
-function oversized(value, length) {
-    return value.trim().length > length
-}
-
-function undersized(value, length) {
-    return value.trim().length < length
-}
-
-function invalid_length(value, { min = 0, max = 0 }) {
-    const safe_value = Number(value)
-
-    const nan = safe_value !== safe_value
-    
-    if (nan)
-        return false
-
-    return safe_value >= min && safe_value <= max
-}
-
-function unequal(a, b) {
-    return a !== b
-}
 
 function restore_focus_to_last_active_element() {
     if (!state.active_element.id)
