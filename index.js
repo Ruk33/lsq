@@ -137,40 +137,48 @@ function dialog({ visible = false, close_command = "" }) {
     `
 }
 
+function text_field(id = "", { label = "", value = "", errors = [""], input_command = "", input_props = "" }) {
+    return `
+        <div>
+            <label>
+                <div>${label}</div>
+                <input 
+                    ${input_props}
+                    id="${id}"
+                    value="${value}"
+                    oninput="window.command('${input_command}', event.target.value)"
+                />
+            </label>
+            <div style="color: red">${errors.join("<br />")}</div>
+        </div>
+    `
+}
+
 function form({}) {
     return `
-        <form onsubmit="event.preventDefault(); window.command('registration_submit')" style="display: grid">
-            <label>
-                <span>Username</span>
-                <input 
-                    id="username"
-                    value="${state.registration.username}"
-                    oninput="window.command('registration_set_username', event.target.value)"
-                />
-                ${state.registration.errors.username.join(", ")}
-            </label>
+        <form onsubmit="event.preventDefault(); window.command('registration_submit')">
+            ${text_field("username", { 
+                label: "Username", 
+                value: state.registration.username, 
+                errors: state.registration.errors.username, 
+                input_command: "registration_set_username",
+            })}
 
-            <label>
-                <span>Password</span>
-                <input 
-                    type="password" 
-                    id="password" 
-                    value="${state.registration.password}" 
-                    oninput="window.command('registration_set_password', event.target.value)"
-                />
-                ${state.registration.errors.password.join(", ")}
-            </label>
+            ${text_field("password", { 
+                label: "Password", 
+                value: state.registration.password, 
+                errors: state.registration.errors.password, 
+                input_command: "registration_set_password",
+                input_props: `type="password"`
+            })}
 
-            <label>
-                <span>Confirm password</span>
-                <input 
-                    type="password" 
-                    id="confirm_password" 
-                    value="${state.registration.confirm_password}" 
-                    oninput="window.command('registration_set_confirm_password', event.target.value)"
-                />
-                ${state.registration.errors.confirm_password.join(", ")}
-            </label>
+            ${text_field("confirm_password", { 
+                label: "Confirm Password", 
+                value: state.registration.confirm_password, 
+                errors: state.registration.errors.confirm_password, 
+                input_command: "registration_set_confirm_password",
+                input_props: `type="password"`
+            })}
 
             <button ${state.registration.submitting && "disabled"}>Submit</button>
         </form>
@@ -178,25 +186,24 @@ function form({}) {
 }
 
 function app() {
-    return form({})
-    // return `
-    //     <div>
-    //         ${form({})}
-    //         ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
-    //         <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
-    //         <span>value: ${state.value}</span>
-    //         <input id="user" value="${state.user}" oninput="window.command('change-user', event.target.value)" />
-    //         <input id="password" value="${state.password}" oninput="window.command('change-password', event.target.value)" onfocus="console.log('focus!')" />
-    //         <button onclick="window.command('increase')">increase</button>
-    //         <button onclick="window.command('decrease')">decrease</button>
-    //         <button onclick="window.command('increase-async', 5000)">increase after 5 seconds</button>
-    //         ${button({})} ${button({ color: "blue" })}
-    //     </div>
-    //     <div>
-    //         <button onclick="window.command('undo')">undo</button>
-    //         <button onclick="window.command('redo')">redo</button>
-    //     </div>
-    // `
+    return `
+        <div>
+            ${form({})}
+            ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
+            <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
+            <span>value: ${state.value}</span>
+            <input id="user" value="${state.user}" oninput="window.command('change-user', event.target.value)" />
+            <input id="password" value="${state.password}" oninput="window.command('change-password', event.target.value)" onfocus="console.log('focus!')" />
+            <button onclick="window.command('increase')">increase</button>
+            <button onclick="window.command('decrease')">decrease</button>
+            <button onclick="window.command('increase-async', 5000)">increase after 5 seconds</button>
+            ${button({})} ${button({ color: "blue" })}
+        </div>
+        <div>
+            <button onclick="window.command('undo')">undo</button>
+            <button onclick="window.command('redo')">redo</button>
+        </div>
+    `
 }
 
 render()
