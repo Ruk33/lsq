@@ -1,6 +1,20 @@
 #application {
+    font-family: "Roboto", sans-serif;
+    min-height: 100vh;
+    height: 100%;
+}
+
+.container {
     width: 1024px;
     margin: 0 auto;
 }
 
+button[type=submit] {
+    background-color: black;
+    color: white;
+    border: 0;
+}
 
+button[type=submit]:disabled {
+    background-color: gray;
+}

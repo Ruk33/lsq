@@ -1,3 +1,11 @@
+function currency(cents = 0, decimals = 2) {
+    if (!cents)
+        return "Free"
+
+    const dollars = Math.round(cents / 100).toFixed(decimals)
+
+    return `$ ${dollars}`
+}
 
 function dialog({ visible = false, close_command = "" }) {
     return `
@@ -25,13 +33,14 @@ function simple_button({ color = "red", button_props = "" }) {
     `
 }
 
-function text_field({ label = "", value = "", errors = [""], input_command = "", input_props = "" }) {
+function text_field({ label = "", value = "", errors = [""], input_props = "" }) {
     return `
         <div>
-            <label>
-                <div>${label}</div>
+            <label style="display: block">
+                <div style="font-weight: bold;">${label}</div>
                 <input 
                     ${input_props}
+                    style="width: calc(100% - 24px); padding: 10px; border: 2px solid #ececec; border-radius: 5px;"
                     value="${value}"
                 />
             </label>

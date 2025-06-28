@@ -18,6 +18,8 @@ let state = {
         submitting: false,
     },
 
+    checkout: checkout_state,
+
     debug: true,
 
     last_command: { name: "", props: {} },
@@ -52,48 +54,52 @@ register_command(function hide_dialog() {
     state.is_dialog_visible = false
 })
 
-register_command(registration_set_username)
-register_command(registration_set_password)
-register_command(registration_set_confirm_password)
-register_command(registration_submit)
-register_command(registration_success)
-register_command(registration_error)
+registration_commands.forEach(register_command)
+// or, if you prefer doing it manually
+//
+// register_command(registration_set_username)
+// register_command(registration_set_password)
+// ...
+
+checkout_commands.forEach(register_command)
 
 function app() {
-    return `
-        <div>
-            <div>
-                <div>
-                    ${dialog({ visible: state.is_dialog_visible, close_command: "window.command('hide_dialog')" })}
-                    <button onclick="window.command('show_dialog')">Show dialog</button>
-                </div>
+    return checkout_page()
 
-                <div>
-                    <span>value: ${state.value}</span>
-                    <button onclick="window.command('increase')">increase</button>
-                    <button onclick="window.command('decrease')">decrease</button>
-                    <button onclick="window.command('increase_async', 5000)">increase after 5 seconds</button>
-                </div>
+    // return `
+    //     <div>
+    //         <div>
+    //             <div>
+    //                 ${dialog({ visible: state.is_dialog_visible, close_command: "window.command('hide_dialog')" })}
+    //                 <button onclick="window.command('show_dialog')">Show dialog</button>
+    //             </div>
 
-                <div>
-                    <input id="user" value="${state.user}" oninput="window.command('change_user', event.target.value)" />
-                    <input id="password" value="${state.password}" oninput="window.command('change_password', event.target.value)" onfocus="console.log('focus!')" />
-                </div>
+    //             <div>
+    //                 <span>value: ${state.value}</span>
+    //                 <button onclick="window.command('increase')">increase</button>
+    //                 <button onclick="window.command('decrease')">decrease</button>
+    //                 <button onclick="window.command('increase_async', 5000)">increase after 5 seconds</button>
+    //             </div>
+
+    //             <div>
+    //                 <input id="user" value="${state.user}" oninput="window.command('change_user', event.target.value)" />
+    //                 <input id="password" value="${state.password}" oninput="window.command('change_password', event.target.value)" onfocus="console.log('focus!')" />
+    //             </div>
                 
-                <div>
-                    <div>${simple_button({})}</div>
-                    <div>
-                        ${simple_button({ 
-                            color: "blue", 
-                            button_props: `onclick="window.command('increase')"`
-                        })}
-                    </div>
-                </div>
+    //             <div>
+    //                 <div>${simple_button({})}</div>
+    //                 <div>
+    //                     ${simple_button({ 
+    //                         color: "blue", 
+    //                         button_props: `onclick="window.command('increase')"`
+    //                     })}
+    //                 </div>
+    //             </div>
 
-                <div>
-                    ${registration_form({})}
-                </div>
-            </div>
-        </div>
-    `
+    //             <div>
+    //                 ${registration_form({})}
+    //             </div>
+    //         </div>
+    //     </div>
+    // `
 }
