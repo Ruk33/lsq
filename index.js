@@ -2,15 +2,28 @@ let state = {
     value: 0,
     user: "someuser",
     password: "super-password",
+    is_dialog_visible: false,
 
     active_element: { id: "", selection_start: 0, selection_end: 0, },
 }
 
-const commands = []
+const commands = {
+    "increase": function() {
+        state.value++
+    },
 
-const versions = []
+    "show-dialog": function() {
+        state.is_dialog_visible = true
+    },
 
-let version_index = 0
+    "hide-dialog": function() {
+        state.is_dialog_visible = false
+    },
+}
+
+const state_history = [JSON.parse(JSON.stringify(state))]
+
+let state_history_index = 0
 
 function restore_focus_to_last_active_element() {
     if (!state.active_element.id)
@@ -44,21 +57,21 @@ function render() {
 }
 
 function undo() {
-    if (version_index <= 0)
+    if (state_history_index - 1 < 0)
         return
 
-    version_index--
-    state = versions[version_index]
+    state_history_index--
+    state = state_history[state_history_index]
 
     render()
 }
 
 function redo() {
-    if (version_index + 1 >= versions.length)
+    if (state_history_index + 1 >= state_history.length)
         return
 
-    version_index++
-    state = versions[version_index]
+    state_history_index++
+    state = state_history[state_history_index]
 
     render()
 }
@@ -98,49 +111,30 @@ function command(name, props) {
         return
     }
 
-    const prev_version = JSON.parse(JSON.stringify(state))
-
-    version_index++
-    versions.push(prev_version)
+    const prev_version = JSON.stringify(state)
 
     save_active_element()
 
     command_to_execute(props)
-    
-    // switch (name) {
-    // case "increase":
-    //     state.value++
-    //     break
-    // case "decrease":
-    //     state.value--
-    //     break
-    // case "change-user":
-    //     state.user = props
-    //     break
-    // case "change-password":
-    //     state.password = props
-    //     break
-    // case "increase-async":
-    //     do_async_increase(props)
-    //     break;
-    // default:
-    //     console.log("WARNING: command without handler", name, props)
-    //     return
-    // }
 
-    console.log("command", name, props)
-    console.log("previous version", prev_version)
-    console.log("new version", state)
+    const new_version = JSON.stringify(state)
+
+    console.log("command executed", name, props)
 
     // don't render if there was no update in the state.
-    if (JSON.stringify(prev_version) === JSON.stringify(state))
+    if (prev_version === new_version) {
+        console.log("state", state)
+        console.log("no render required since the state didn't changed with the executed command.")
         return
+    }
+
+    state_history.push(JSON.parse(new_version))
+    state_history_index = state_history.length - 1
+
+    console.log("state before running command", JSON.parse(prev_version))
+    console.log("state after  running command", state)
 
     render()
-}
-
-function register_command(name, handler) {
-    commands[name] = handler
 }
 
 function button(color = "red") {
@@ -151,9 +145,19 @@ function button(color = "red") {
     `
 }
 
+function dialog({ visible = false, close_command = "" }) {
+    return `
+        <div style="position: absolute; top: 200px; left: 200px; border: 2px solid black; display: ${visible ? "block" : "none"}">
+            Hello! <button type="button" onclick="window.command('${close_command}')">Close me bro!</button>
+        </div>
+    `
+}
+
 function app() {
     return `
         <div>
+            ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
+            <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
             <span>value: ${state.value}</span>
             <input id="user" value="${state.user}" oninput="window.command('change-user', event.target.value)" />
             <input id="password" value="${state.password}" oninput="window.command('change-password', event.target.value)" onfocus="console.log('focus!')" />
@@ -168,9 +172,5 @@ function app() {
         </div>
     `
 }
-
-register_command("increase", function(props) {
-    state.value++
-})
 
 render()
