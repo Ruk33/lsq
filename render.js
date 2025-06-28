@@ -105,7 +105,7 @@ function update_element(parent, new_content) {
                     old_child.setAttribute(name, value)
             }
 
-            if (!old_child.children.length)
+            if (!old_child.children.length && old_child.innerHTML !== new_child.innerHTML)
                 old_child.innerHTML = new_child.innerHTML
 
             update_element(old_child, new_child)
