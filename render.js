@@ -1,22 +1,3 @@
-function restore_focus_to_last_active_element() {
-    if (!state.active_element.id)
-        return
-
-    const focused = document.getElementById(state.active_element.id)
-
-    if (!focused)
-        return
-
-    const prev_onfocus = focused.onfocus
-
-    focused.onfocus = null
-
-    focused.focus()
-    focused.setSelectionRange(state.active_element.selection_start, state.active_element.selection_end)
-
-    focused.onfocus = prev_onfocus
-}
-
 function undo() {
     if (state_history_index - 1 < 0)
         return
@@ -35,16 +16,6 @@ function redo() {
     state = state_history[state_history_index]
 
     render()
-}
-
-function save_active_element() {
-    const active_element = document.activeElement
-
-    state.active_element = {
-        id: active_element?.getAttribute("id"),
-        selection_start: active_element?.selectionStart,
-        selection_end: active_element?.selectionEnd,
-    }
 }
 
 function command(name, props) {
@@ -67,8 +38,6 @@ function command(name, props) {
     }
 
     const prev_version = JSON.stringify(state)
-
-    save_active_element()
 
     command_to_execute(props)
 
@@ -96,8 +65,53 @@ function render() {
     const destination = document.getElementById("application")
 
     if (destination) {
-        destination.innerHTML = app()
+        const dom = document.createElement("div")
 
-        restore_focus_to_last_active_element()
+        dom.innerHTML = app()
+
+        update_element(destination, dom)
+    }
+}
+
+function update_element(parent, new_content) {
+    const old_children = parent.children
+    const new_children = new_content.children
+
+    for (let i = 0; i < Math.max(old_children.length, new_children.length); i++) {
+        const old_child = old_children[i]
+        const new_child = new_children[i]
+
+        if (!old_child && !new_child)
+            continue
+        else if (!old_child && new_child)
+            parent.appendChild(new_child)
+        else if (old_child && !new_child)
+            parent.removeChild(old_child)
+        else if (old_child.tagName !== new_child.tagName)
+            old_child.innerHTML = new_child.innerHTML
+        else {
+            // remove attributes that are not present in the new node version.
+            for (const { name } of old_child.attributes) {
+                if (!new_child.hasAttribute(name))
+                    old_child.removeAttribute(name)
+            }
+
+            for (const { name, value } of new_child.attributes) {
+                const old_value = old_child.getAttribute(name)
+
+                if (name === "disabled")
+                    old_child[name] = value !== false
+                else if (name === "value")
+                    old_child[name] = value
+                else if (old_value !== value)
+                    old_child.setAttribute(name, value)
+            }
+
+            // update the text content if required.
+            if (old_child.childNodes.length === 1 && old_child.childNodes[0].nodeType === Node.TEXT_NODE)
+                old_child.textContent = new_child.textContent;
+
+            update_element(old_child, new_child)
+        }
     }
 }

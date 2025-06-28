@@ -45,7 +45,7 @@ const commands = {
     },
 
     "registration_set_username": function(username) {
-        state.registration.username = username
+        state.registration.username = username.toUpperCase()
 
         state.registration.errors.username = registration_validate_username(username)
     },
@@ -149,7 +149,9 @@ function text_field(id = "", { label = "", value = "", errors = [""], input_comm
                     oninput="window.command('${input_command}', event.target.value)"
                 />
             </label>
-            <div style="color: red">${errors.join("<br />")}</div>
+            <div style="color: red">${errors.map(function(error) {
+                return `<div>${error}</div>`
+            })}</div>
         </div>
     `
 }
@@ -188,20 +190,22 @@ function form({}) {
 function app() {
     return `
         <div>
-            ${form({})}
-            ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
-            <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
-            <span>value: ${state.value}</span>
-            <input id="user" value="${state.user}" oninput="window.command('change-user', event.target.value)" />
-            <input id="password" value="${state.password}" oninput="window.command('change-password', event.target.value)" onfocus="console.log('focus!')" />
-            <button onclick="window.command('increase')">increase</button>
-            <button onclick="window.command('decrease')">decrease</button>
-            <button onclick="window.command('increase-async', 5000)">increase after 5 seconds</button>
-            ${button({})} ${button({ color: "blue" })}
-        </div>
-        <div>
-            <button onclick="window.command('undo')">undo</button>
-            <button onclick="window.command('redo')">redo</button>
+            <div>
+                ${form({})}
+                ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
+                <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
+                <span>value: ${state.value}</span>
+                <input id="user" value="${state.user}" oninput="window.command('change-user', event.target.value)" />
+                <input id="password" value="${state.password}" oninput="window.command('change-password', event.target.value)" onfocus="console.log('focus!')" />
+                <button onclick="window.command('increase')">increase</button>
+                <button onclick="window.command('decrease')">decrease</button>
+                <button onclick="window.command('increase-async', 5000)">increase after 5 seconds</button>
+                ${button({})} ${button({ color: "blue" })}
+            </div>
+            <div>
+                <button onclick="window.command('undo')">undo</button>
+                <button onclick="window.command('redo')">redo</button>
+            </div>
         </div>
     `
 }
