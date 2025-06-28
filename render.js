@@ -1,3 +1,7 @@
+const state_history = [JSON.parse(JSON.stringify(state))]
+
+let state_history_index = 0
+
 function undo() {
     if (state_history_index - 1 < 0)
         return
@@ -112,3 +116,5 @@ function update_element(parent, new_content) {
         }
     }
 }
+
+setTimeout(render, 1)

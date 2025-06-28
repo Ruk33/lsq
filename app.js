@@ -21,10 +21,6 @@ let state = {
     active_element: { id: "", selection_start: 0, selection_end: 0, },
 }
 
-const state_history = [JSON.parse(JSON.stringify(state))]
-
-let state_history_index = 0
-
 const commands = {
     "increase": function() {
         state.value++
@@ -158,7 +154,7 @@ function text_field(id = "", { label = "", value = "", errors = [""], input_comm
     `
 }
 
-function form({}) {
+function registration_form({}) {
     return `
         <form onsubmit="event.preventDefault(); window.command('registration_submit')">
             ${text_field("username", { 
@@ -193,7 +189,7 @@ function app() {
     return `
         <div>
             <div>
-                ${form({})}
+                ${registration_form({})}
                 ${dialog({ visible: state.is_dialog_visible, close_command: "hide-dialog" })}
                 <button onclick="window.command('show-dialog')">SHOW DIALOG</button>
                 <span>value: ${state.value}</span>
@@ -211,5 +207,3 @@ function app() {
         </div>
     `
 }
-
-render()
