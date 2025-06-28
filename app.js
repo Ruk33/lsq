@@ -32,10 +32,12 @@ const commands = {
         state.value--
     },
 
-    "increase async": function(ms) {
-        setTimeout(function() {
-            window.command("increase")
-        }, ms)
+    "increase async": async function(ms) {
+        await sleep_for(ms)
+        window.command("increase")
+        // setTimeout(function() {
+        //     window.command("increase")
+        // }, ms)
     },
 
     "change user": function(user) {
@@ -106,3 +108,7 @@ register_command(registration_set_confirm_password)
 register_command(registration_submit)
 register_command(registration_success)
 register_command(registration_error)
+
+setTimeout(() => {
+    console.log(22, parameters(registration_set_username))
+}, 1);
