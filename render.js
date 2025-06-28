@@ -3,6 +3,9 @@ const state_history = [JSON.parse(JSON.stringify(state))]
 let state_history_index = 0
 
 function undo() {
+    if (!state.debug)
+        return
+
     if (state_history_index - 1 < 0)
         return
 
@@ -18,6 +21,9 @@ function undo() {
 }
 
 function redo() {
+    if (!state.debug)
+        return
+
     if (state_history_index + 1 >= state_history.length)
         return
 
@@ -48,20 +54,25 @@ function command(name, props) {
 
     const new_version = JSON.stringify(state)
 
-    console.log("command executed", name, props)
-
     const render_is_not_required = prev_version === new_version
 
     if (render_is_not_required) {
-        console.log("no render required since the state didn't changed with the executed command")
+        if (state.debug) {
+            console.log("command executed", name, props)
+            console.log("no render required since the state didn't changed with the executed command")
+        }
+
         return
     }
 
     state_history.push(JSON.parse(new_version))
     state_history_index = state_history.length - 1
 
-    console.log("state before running command", JSON.parse(prev_version))
-    console.log("state after  running command", state)
+    if (state.debug) {
+        console.log("command executed", name, props)
+        console.log("state before running command", JSON.parse(prev_version))
+        console.log("state after  running command", state)
+    }
 
     render()
 }
@@ -119,17 +130,20 @@ function update_element(parent, new_content) {
 }
 
 function install_undo_redo_hotkeys() {
-    const undo_hotkey = "z"
-
-    const redo_hotkey = "y"
-
     window.addEventListener("keydown", function(e) {
+        if (!state.debug)
+            return
+
         const ctrl = e.ctrlKey
 
         if (!ctrl)
             return
 
         const key_pressed = e.key
+
+        const undo_hotkey = state.undo_hotkey || "z"
+
+        const redo_hotkey = state.redo_hotkey || "y"
 
         if (key_pressed === undo_hotkey) {
             e.preventDefault()

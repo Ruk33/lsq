@@ -18,6 +18,8 @@ let state = {
         submitting: false,
     },
 
+    debug: false,
+
     last_command: { name: "", props: {} },
 }
 
@@ -55,51 +57,12 @@ const commands = {
     // ...
 }
 
-function simple_button({ color = "red" }) {
-    return `
-        <button 
-            type="button" 
-            onclick="window.command('increase')" 
-            style="background-color: ${color}"
-        >
-            ok
-        </button>
-    `
-}
-
-function dialog({ visible = false, close_command = "" }) {
-    return `
-        <div style="position: absolute; top: 200px; left: 200px; border: 2px solid black; display: ${visible ? "block" : "none"}">
-            Hello! <button type="button" onclick="window.command('${close_command}')">Close me!</button>
-        </div>
-    `
-}
-
-function text_field(id = "", { label = "", value = "", errors = [""], input_command = "", input_props = "" }) {
-    return `
-        <div>
-            <label>
-                <div>${label}</div>
-                <input 
-                    ${input_props}
-                    id="${id}"
-                    value="${value}"
-                    oninput="window.command('${input_command}', event.target.value)"
-                />
-            </label>
-            <div style="color: red">${errors.map(function(error) {
-                return `<div>${error}</div>`
-            })}</div>
-        </div>
-    `
-}
-
 function app() {
     return `
         <div>
             <div>
                 <div>
-                    ${dialog({ visible: state.is_dialog_visible, close_command: "hide dialog" })}
+                    ${dialog({ visible: state.is_dialog_visible, close_command: "window.command('hide dialog')" })}
                     <button onclick="window.command('show dialog')">Show dialog</button>
                 </div>
 
@@ -117,7 +80,12 @@ function app() {
                 
                 <div>
                     <div>${simple_button({})}</div>
-                    <div>${simple_button({ color: "blue" })}</div>
+                    <div>
+                        ${simple_button({ 
+                            color: "blue", 
+                            button_props: `onclick="window.command('increase')"`
+                        })}
+                    </div>
                 </div>
 
                 <div>

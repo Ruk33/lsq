@@ -79,27 +79,25 @@ function registration_validate_confirm_password(password, confirm_password) {
 function registration_form({}) {
     return `
         <form onsubmit="event.preventDefault(); window.command('registration_submit')">
-            ${text_field("username", { 
+            ${text_field({ 
                 label: "Username", 
                 value: state.registration.username, 
                 errors: state.registration.errors.username, 
-                input_command: "registration_set_username",
+                input_props: `oninput="window.command('registration_set_username', event.target.value)"`,
             })}
 
-            ${text_field("password", { 
+            ${text_field({ 
                 label: "Password", 
                 value: state.registration.password, 
                 errors: state.registration.errors.password, 
-                input_command: "registration_set_password",
-                input_props: `type="password"`
+                input_props: `type="password" oninput="window.command('registration_set_password', event.target.value)"`
             })}
 
-            ${text_field("confirm_password", { 
+            ${text_field({ 
                 label: "Confirm Password", 
                 value: state.registration.confirm_password, 
                 errors: state.registration.errors.confirm_password, 
-                input_command: "registration_set_confirm_password",
-                input_props: `type="password"`
+                input_props: `type="password" oninput="window.command('registration_set_confirm_password', event.target.value)"`
             })}
 
             <button ${state.registration.submitting && "disabled"}>Submit</button>
