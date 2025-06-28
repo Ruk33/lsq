@@ -1,6 +1,12 @@
-const state_history = [JSON.parse(JSON.stringify(state))]
+const state_history = []
 
 let state_history_index = 0
+
+const commands = {}
+
+function register_command(handler) {
+    commands[handler.name] = handler
+}
 
 function undo() {
     if (!state.debug)

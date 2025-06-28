@@ -18,66 +18,66 @@ let state = {
         submitting: false,
     },
 
-    debug: false,
+    debug: true,
 
     last_command: { name: "", props: {} },
 }
 
-const commands = {
-    "increase": function() {
-        state.value++
-    },
+register_command(function increase() {
+    state.value++
+})
 
-    "decrease": function() {
-        state.value--
-    },
+register_command(function decrease() {
+    state.value--
+})
 
-    "increase async": async function(ms) {
-        await sleep_for(ms)
-        window.command("increase")
-        // setTimeout(function() {
-        //     window.command("increase")
-        // }, ms)
-    },
+register_command(async function increase_async(ms = 0) {
+    await sleep_for(ms)
+    window.command("increase")
+})
 
-    "change user": function(user) {
-        state.user = user
-    },
+register_command(function change_user(user = "") {
+    state.user = user
+})
 
-    "change password": function(password) {
-        state.password = password
-    },
+register_command(function change_password(password = "") {
+    state.password = password
+})
 
-    "show dialog": function() {
-        state.is_dialog_visible = true
-    },
+register_command(function show_dialog() {
+    state.is_dialog_visible = true
+})
 
-    "hide dialog": function() {
-        state.is_dialog_visible = false
-    },
+register_command(function hide_dialog() {
+    state.is_dialog_visible = false
+})
 
-    // ...
-}
+register_command(registration_set_username)
+register_command(registration_set_password)
+register_command(registration_set_confirm_password)
+register_command(registration_submit)
+register_command(registration_success)
+register_command(registration_error)
 
 function app() {
     return `
         <div>
             <div>
                 <div>
-                    ${dialog({ visible: state.is_dialog_visible, close_command: "window.command('hide dialog')" })}
-                    <button onclick="window.command('show dialog')">Show dialog</button>
+                    ${dialog({ visible: state.is_dialog_visible, close_command: "window.command('hide_dialog')" })}
+                    <button onclick="window.command('show_dialog')">Show dialog</button>
                 </div>
 
                 <div>
                     <span>value: ${state.value}</span>
                     <button onclick="window.command('increase')">increase</button>
                     <button onclick="window.command('decrease')">decrease</button>
-                    <button onclick="window.command('increase async', 5000)">increase after 5 seconds</button>
+                    <button onclick="window.command('increase_async', 5000)">increase after 5 seconds</button>
                 </div>
 
                 <div>
-                    <input id="user" value="${state.user}" oninput="window.command('change user', event.target.value)" />
-                    <input id="password" value="${state.password}" oninput="window.command('change password', event.target.value)" onfocus="console.log('focus!')" />
+                    <input id="user" value="${state.user}" oninput="window.command('change_user', event.target.value)" />
+                    <input id="password" value="${state.password}" oninput="window.command('change_password', event.target.value)" onfocus="console.log('focus!')" />
                 </div>
                 
                 <div>
@@ -97,18 +97,3 @@ function app() {
         </div>
     `
 }
-
-function register_command(handler) {
-    commands[handler.name] = handler
-}
-
-register_command(registration_set_username)
-register_command(registration_set_password)
-register_command(registration_set_confirm_password)
-register_command(registration_submit)
-register_command(registration_success)
-register_command(registration_error)
-
-setTimeout(() => {
-    console.log(22, parameters(registration_set_username))
-}, 1);
