@@ -26,97 +26,13 @@ const commands = {
         state.value++
     },
 
-    "show-dialog": function() {
-        state.is_dialog_visible = true
-    },
-
-    "hide-dialog": function() {
-        state.is_dialog_visible = false
-    },
-
     "increase-async": function(ms) {
         setTimeout(function() {
             window.command("increase")
         }, ms)
     },
 
-    "registration_set_username": function(username) {
-        username = username.toUpperCase()
-
-        state.registration.username = username
-
-        state.registration.errors.username = registration_validate_username(username)
-    },
-
-    "registration_set_password": function(password) {
-        state.registration.password = password
-
-        state.registration.errors.password = registration_validate_password(password)
-    },
-
-    "registration_set_confirm_password": function(confirm_password) {
-        const password = state.registration.password
-
-        state.registration.confirm_password = confirm_password
-
-        state.registration.errors.confirm_password = registration_validate_confirm_password(password, confirm_password)
-    },
-
-    "registration_submit": function() {
-        if (state.registration.submitting)
-            return
-
-        state.registration.errors.username = registration_validate_username(state.registration.username)
-
-        state.registration.errors.password = registration_validate_password(state.registration.password)
-
-        state.registration.errors.confirm_password = registration_validate_confirm_password(
-            state.registration.password, 
-            state.registration.confirm_password
-        )
-
-        if (invalid(state.registration.errors))
-            return
-
-        state.registration.submitting = true
-
-        // simulate ajax request.
-        setTimeout(function() {
-            window.command("registration_success")
-        }, 5000);
-    },
-
-    "registration_success": function() {
-        state.registration.submitting = false;
-
-        alert("alright! registered.")
-    },
-
-    "registration_error": function() {
-        state.registration.submitting = false;
-    },
-}
-
-function registration_validate_username(username) {
-    return [
-        missing(username) ? "The username is required!" : "",
-        undersized(username, 2) ? "The username must be at least 2 characters long" : "",
-        oversized(username, 10) ? "The username can't be longer than 10 characters" : "",
-    ].filter(Boolean)
-}
-
-function registration_validate_password(password) {
-    return [
-        missing(password) ? "The password is required!" : "",
-        undersized(password, 2) ? "The password must be at least 2 characters long" : "",
-        oversized(password, 10) ? "The password can't be longer than 10 characters" : "",
-    ].filter(Boolean)
-}
-
-function registration_validate_confirm_password(password, confirm_password) {
-    return [
-        unequal(password, confirm_password) ? "The passwords do not match" : "",
-    ].filter(Boolean)
+    // ...
 }
 
 function button({ color = "red" }) {
@@ -154,37 +70,6 @@ function text_field(id = "", { label = "", value = "", errors = [""], input_comm
     `
 }
 
-function registration_form({}) {
-    return `
-        <form onsubmit="event.preventDefault(); window.command('registration_submit')">
-            ${text_field("username", { 
-                label: "Username", 
-                value: state.registration.username, 
-                errors: state.registration.errors.username, 
-                input_command: "registration_set_username",
-            })}
-
-            ${text_field("password", { 
-                label: "Password", 
-                value: state.registration.password, 
-                errors: state.registration.errors.password, 
-                input_command: "registration_set_password",
-                input_props: `type="password"`
-            })}
-
-            ${text_field("confirm_password", { 
-                label: "Confirm Password", 
-                value: state.registration.confirm_password, 
-                errors: state.registration.errors.confirm_password, 
-                input_command: "registration_set_confirm_password",
-                input_props: `type="password"`
-            })}
-
-            <button ${state.registration.submitting && "disabled"}>Submit</button>
-        </form>
-    `
-}
-
 function app() {
     return `
         <div>
@@ -207,3 +92,14 @@ function app() {
         </div>
     `
 }
+
+function register_command(handler) {
+    commands[handler.name] = handler
+}
+
+register_command(registration_set_username)
+register_command(registration_set_password)
+register_command(registration_set_confirm_password)
+register_command(registration_submit)
+register_command(registration_success)
+register_command(registration_error)
