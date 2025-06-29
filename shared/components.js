@@ -7,6 +7,18 @@ function currency(cents = 0, decimals = 2) {
     return `$ ${dollars}`
 }
 
+function link({ path = "", link_props = "", content = "" }) {
+    return `
+        <a
+            ${link_props}
+            href="${path}"
+            onclick="event.preventDefault(); window.command('navigate', event.target.href);"
+        >
+            ${content}
+        </a>
+    `
+}
+
 function dialog({ visible = false, close_command = "" }) {
     return `
         <div style="width: 100%; height: 100%; background-color: rgb(0 0 0 / 50%); position: fixed; z-index: 1; top: 0; left: 0; overflow: hidden; align-items: center; justify-content: center; display: ${visible ? "flex" : "none"}">
@@ -21,14 +33,14 @@ function dialog({ visible = false, close_command = "" }) {
     `
 }
 
-function simple_button({ color = "red", button_props = "" }) {
+function simple_button({ color = "red", button_props = "", content = "ok" }) {
     return `
         <button 
             ${button_props}
             type="button" 
             style="background-color: ${color}"
         >
-            ok
+            ${content}
         </button>
     `
 }

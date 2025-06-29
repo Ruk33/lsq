@@ -329,7 +329,9 @@ function checkout_top_menu() {
     return `
         <div style="padding: 10px; border-bottom: 2px solid #f4f4f4;">
             <div class="container">
-                <a href="/">LSQ</a>
+                <a href="#">LSQ</a>
+                <a href="app.html">Go</a>
+                ${link({ path: "app.html", content: "Hello!" })}
                 <h1>Order review</h1>
             </div>
         </div>
