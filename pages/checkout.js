@@ -76,31 +76,31 @@ const checkout_commands = [
         window.command("checkout_request_promotions")
     },
 
-    function checkout_request_items() {
+    async function checkout_request_items() {
         state.checkout.items_status = request_pending
 
-        setTimeout(function() {
-            const items = [
-                {
-                    id: 1,
-                    name: "T-Shirt",
-                    price: 200,
-                    quantity: 1,
-                    stock: 2,
-                    image: "public/tshirt-1.png",
-                },
-                {
-                    id: 2,
-                    name: "Pullover + Hat",
-                    price: 400,
-                    quantity: 2,
-                    stock: 10,
-                    image: "public/pullover-hat-2.png",
-                }
-            ]
+        await sleep_for(4000)
 
-            window.command("checkout_set_items", items)
-        }, 4000)
+        const items = [
+            {
+                id: 1,
+                name: "T-Shirt",
+                price: 200,
+                quantity: 1,
+                stock: 2,
+                image: "public/tshirt-1.png",
+            },
+            {
+                id: 2,
+                name: "Pullover + Hat",
+                price: 400,
+                quantity: 2,
+                stock: 10,
+                image: "public/pullover-hat-2.png",
+            }
+        ]
+
+        window.command("checkout_set_items", items)
     },
 
     function checkout_set_items(items = checkout_state.items) {
@@ -109,26 +109,26 @@ const checkout_commands = [
         state.checkout.items = items
     },
 
-    function checkout_request_promotions() {
+    async function checkout_request_promotions() {
         state.checkout.promotions_status = request_pending
 
-        setTimeout(function() {
-            const promotions = [
-                {
-                    id: 100,
-                    name: "10% off!",
-                    triggers: [],
-                    actions: [{
-                        ids: [],
-                        discount_amount: 10,
-                        is_fixed_discount: false,
-                        discounts_each_unit: false
-                    }]
-                }
-            ]
+        await sleep_for(2000)
 
-            window.command("checkout_set_promotions", promotions)
-        }, 2000)
+        const promotions = [
+            {
+                id: 100,
+                name: "10% off!",
+                triggers: [],
+                actions: [{
+                    ids: [],
+                    discount_amount: 10,
+                    is_fixed_discount: false,
+                    discounts_each_unit: false
+                }]
+            }
+        ]
+
+        window.command("checkout_set_promotions", promotions)
 
         // we can't use fetch in localhost because cors, yay!
         //
@@ -150,35 +150,37 @@ const checkout_commands = [
         state.checkout.promotions = promotions
     },
 
-    function checkout_request_shipping_options() {
+    async function checkout_request_shipping_options() {
         state.checkout.shipping_options_status = request_pending
 
-        setTimeout(function() {
-            const shipping_options = [
-                {
-                    id: 3,
-                    name: "Fedex",
-                    price: 200,
-                    delivery_time: "2 days",
-                },
-                {
-                    id: 4,
-                    name: "DHL Delivery",
-                    price: 0,
-                    delivery_time: "10 days",
-                },
-            ]
+        state.checkout.shipping_options = checkout_state.shipping_options
 
-            window.command("checkout_set_shipping_options", shipping_options)
-        }, 4000)
+        state.checkout.shipping_option = checkout_state.shipping_option
+
+        await sleep_for(4000)
+
+        const shipping_options = [
+            {
+                id: 3,
+                name: "Fedex",
+                price: 200,
+                delivery_time: "2 days",
+            },
+            {
+                id: 4,
+                name: "DHL Delivery",
+                price: 0,
+                delivery_time: "10 days",
+            },
+        ]
+
+        window.command("checkout_set_shipping_options", shipping_options)
     },
 
     function checkout_set_shipping_options(shipping_options = checkout_state.shipping_options) {
         state.checkout.shipping_options_status = request_succeeded
 
         state.checkout.shipping_options = shipping_options
-
-        state.checkout.shipping_option = -1
     },
 
     function checkout_set_email_address(email = "") {
@@ -383,19 +385,25 @@ function checkout_summary_order() {
 
                 <h4>Available shipping options</h4>
 
-                <div style="padding: 20px; border: 2px solid #ececec; border-radius: 5px; display: grid; gap: 10px;">
-                    ${state.checkout.shipping_options_status === request_succeeded ? state.checkout.shipping_options.map(function(shipping_option) {
-                        return checkout_shipping_option({
-                            id: shipping_option.id,
-                            name: shipping_option.name,
-                            price: shipping_option.price,
-                            delivery_time: shipping_option.delivery_time,
-                        })
-                    }).join("") : ""}
+                <div>${state.checkout.shipping_option}</div>
 
-                    ${state.checkout.shipping_options_status === request_pending ? "Loading shipping options..." : ""}
+                <div style="padding: 20px; border: 2px solid #ececec; border-radius: 5px;">
+                    <div style="display: ${state.checkout.shipping_options_status === request_succeeded ? "grid" : "none"}; gap: 10px;">
+                        ${state.checkout.shipping_options.map(function(shipping_option) {
+                            return checkout_shipping_option({
+                                id: shipping_option.id,
+                                name: shipping_option.name,
+                                price: shipping_option.price,
+                                delivery_time: shipping_option.delivery_time,
+                            })
+                        })}
+                    </div>
 
-                    ${state.checkout.shipping_options_status === request_idle ? "Update your billing address to see the shipping options." : ""}
+                    <div style="display: ${state.checkout.shipping_options_status === request_pending ? "block" : "none"}">Loading shipping options...</div>
+
+                    <div style="display: ${state.checkout.shipping_options_status === request_idle ? "block" : "none"}">
+                        Update your billing address to see the shipping options.
+                    </div>
                 </div>
             </div>
         </div>
