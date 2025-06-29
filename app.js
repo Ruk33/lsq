@@ -4,19 +4,7 @@ let state = {
     password: "super-password",
     is_dialog_visible: false,
 
-    registration: {
-        username: "",
-        password: "",
-        confirm_password: "",
-
-        errors: {
-            username: [""],
-            password: [""],
-            confirm_password: [""],
-        },
-
-        submitting: false,
-    },
+    registration: registration_state,
 
     checkout: checkout_state,
 
@@ -74,6 +62,9 @@ function app() {
     //                 <button onclick="window.command('show_dialog')">Show dialog</button>
     //             </div>
 
+
+
+
     //             <div>
     //                 <span>value: ${state.value}</span>
     //                 <button onclick="window.command('increase')">increase</button>
@@ -81,11 +72,17 @@ function app() {
     //                 <button onclick="window.command('increase_async', 5000)">increase after 5 seconds</button>
     //             </div>
 
+
+
+
     //             <div>
     //                 <input id="user" value="${state.user}" oninput="window.command('change_user', event.target.value)" />
     //                 <input id="password" value="${state.password}" oninput="window.command('change_password', event.target.value)" onfocus="console.log('focus!')" />
     //             </div>
                 
+
+
+
     //             <div>
     //                 <div>${simple_button({})}</div>
     //                 <div>
@@ -95,6 +92,9 @@ function app() {
     //                     })}
     //                 </div>
     //             </div>
+
+
+
 
     //             <div>
     //                 ${registration_form({})}

@@ -1,3 +1,17 @@
+const registration_state = {
+    username: "",
+    password: "",
+    confirm_password: "",
+
+    errors: {
+        username: [""],
+        password: [""],
+        confirm_password: [""],
+    },
+
+    submitting: false,
+}
+
 const registration_commands = [
     function registration_set_username(username = "") {
         username = username.toUpperCase()

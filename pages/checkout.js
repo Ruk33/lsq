@@ -234,7 +234,8 @@ const checkout_commands = [
 
         state.checkout.errors.billing_address = checkout_validate_billing_address(billing_address)
 
-        window.command("checkout_request_shipping_options")
+        // window.command("checkout_request_shipping_options")
+        checkout_debounced_request_shipping_options()
     },
 
     function checkout_set_billing_country(billing_country = "") {
@@ -242,7 +243,8 @@ const checkout_commands = [
 
         state.checkout.errors.billing_country = checkout_validate_billing_country(billing_country)
 
-        window.command("checkout_request_shipping_options")
+        // window.command("checkout_request_shipping_options")
+        checkout_debounced_request_shipping_options()
     },
 
     function checkout_set_billing_zip(billing_zip = "") {
@@ -250,11 +252,12 @@ const checkout_commands = [
 
         state.checkout.errors.billing_zip = checkout_validate_billing_zip(billing_zip)
 
-        window.command("checkout_request_shipping_options")
+        // window.command("checkout_request_shipping_options")
+        checkout_debounced_request_shipping_options()
     },
 
     function checkout_set_shipping(shipping_option = 0) {
-        const valid_shipping = state.checkout.shipping_options.findIndex(function(valid_shipping_option) {
+        const valid_shipping = state.checkout.shipping_options.find(function(valid_shipping_option) {
             return valid_shipping_option.id === shipping_option
         })
 
@@ -264,6 +267,10 @@ const checkout_commands = [
         state.checkout.shipping_option = shipping_option
     },
 ]
+
+const checkout_debounced_request_shipping_options = debounce(function() {
+    window.command("checkout_request_shipping_options")
+})
 
 function checkout_validate_email_address(email = "") {
     return [
@@ -384,8 +391,6 @@ function checkout_summary_order() {
                 </div>
 
                 <h4>Available shipping options</h4>
-
-                <div>${state.checkout.shipping_option}</div>
 
                 <div style="padding: 20px; border: 2px solid #ececec; border-radius: 5px;">
                     <div style="display: ${state.checkout.shipping_options_status === request_succeeded ? "grid" : "none"}; gap: 10px;">
