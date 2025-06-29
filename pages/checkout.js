@@ -1,73 +1,75 @@
-const checkout_state = {
-    initialize_status: request_idle,
+function checkout_state() {
+    return {
+        initialize_status: request_idle,
 
-    email_address: "",
-    card_number: "",
-    card_expiry_mm_yy: "",
-    card_cvc: "",
-    card_holder: "",
-    billing_address: "",
-    billing_country: "",
-    billing_zip: "",
+        email_address: "",
+        card_number: "",
+        card_expiry_mm_yy: "",
+        card_cvc: "",
+        card_holder: "",
+        billing_address: "",
+        billing_country: "",
+        billing_zip: "",
 
-    errors: {
-        email_address: [""],
-        card_number: [""],
-        card_expiry_mm_yy: [""],
-        card_cvc: [""],
-        card_holder: [""],
-        billing_address: [""],
-        billing_country: [""],
-        billing_zip: [""],
-    },
+        errors: {
+            email_address: [""],
+            card_number: [""],
+            card_expiry_mm_yy: [""],
+            card_cvc: [""],
+            card_holder: [""],
+            billing_address: [""],
+            billing_country: [""],
+            billing_zip: [""],
+        },
 
-    items: [{
-        id: 0,
-        image: "",
-        name: "",
-        quantity: 0,
-        price: 0,
-        stock: 0,
-    }],
-
-    items_status: request_idle,
-
-    promotions: [{
-        id: 0,
-        name: "",
-        triggers: [{
+        items: [{
             id: 0,
-            quantity: 0
+            image: "",
+            name: "",
+            quantity: 0,
+            price: 0,
+            stock: 0,
         }],
-        actions: [{
-            ids: [0],
-            discount_amount: 0,
-            is_fixed_discount: false,
-            discounts_each_unit: false,
+
+        items_status: request_idle,
+
+        promotions: [{
+            id: 0,
+            name: "",
+            triggers: [{
+                id: 0,
+                quantity: 0
+            }],
+            actions: [{
+                ids: [0],
+                discount_amount: 0,
+                is_fixed_discount: false,
+                discounts_each_unit: false,
+            }],
         }],
-    }],
 
-    promotions_status: request_idle,
+        promotions_status: request_idle,
 
-    shipping_options: [{
-        id: 0,
-        name: "",
-        price: 0,
-        delivery_time: "",
-    }],
+        shipping_options: [{
+            id: 0,
+            name: "",
+            price: 0,
+            delivery_time: "",
+        }],
 
-    shipping_options_status: request_idle,
+        shipping_options_status: request_idle,
 
-    shipping_option: -1,
+        shipping_option: -1,
 
-    total: 0,
+        total: 0,
 
-    submitting: false,
+        submitting: false,
+    }
 }
 
 const checkout_commands = [
     function checkout_initialization() {
-        state.checkout.initialize_status = request_succeeded
+        state.checkout = checkout_state()
 
         window.command("checkout_request_items")
 
@@ -101,7 +103,10 @@ const checkout_commands = [
         window.command("checkout_set_items", items)
     },
 
-    function checkout_set_items(items = checkout_state.items) {
+    function checkout_set_items(items = checkout_state().items) {
+        if (request_was_aborted(state.checkout.items_status))
+            return
+
         state.checkout.items_status = request_succeeded
 
         state.checkout.items = items
@@ -142,7 +147,10 @@ const checkout_commands = [
         //     })
     },
 
-    function checkout_set_promotions(promotions = checkout_state.promotions) {
+    function checkout_set_promotions(promotions = checkout_state().promotions) {
+        if (request_was_aborted(state.checkout.promotions_status))
+            return
+
         state.checkout.promotions_status = request_succeeded
 
         state.checkout.promotions = promotions
@@ -151,9 +159,9 @@ const checkout_commands = [
     async function checkout_request_shipping_options() {
         state.checkout.shipping_options_status = request_pending
 
-        state.checkout.shipping_options = checkout_state.shipping_options
+        state.checkout.shipping_options = checkout_state().shipping_options
 
-        state.checkout.shipping_option = checkout_state.shipping_option
+        state.checkout.shipping_option = checkout_state().shipping_option
 
         await sleep_for(4000)
 
@@ -175,7 +183,10 @@ const checkout_commands = [
         window.command("checkout_set_shipping_options", shipping_options)
     },
 
-    function checkout_set_shipping_options(shipping_options = checkout_state.shipping_options) {
+    function checkout_set_shipping_options(shipping_options = checkout_state().shipping_options) {
+        if (request_was_aborted(state.checkout.shipping_options_status))
+            return
+
         state.checkout.shipping_options_status = request_succeeded
 
         state.checkout.shipping_options = shipping_options

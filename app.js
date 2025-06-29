@@ -8,7 +8,7 @@ let state = {
 
     registration: registration_state,
 
-    checkout: checkout_state,
+    checkout: checkout_state(),
 
     debug: true,
 
