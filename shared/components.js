@@ -11,8 +11,7 @@ function link({ path = "", link_props = "", content = "" }) {
     return `
         <a
             ${link_props}
-            href="${path}"
-            onclick="event.preventDefault(); window.command('navigate', event.target.href);"
+            href="#${path}"
         >
             ${content}
         </a>

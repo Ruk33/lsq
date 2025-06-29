@@ -92,9 +92,11 @@ function registration_validate_confirm_password(password = "", confirm_password 
     ].filter(Boolean)
 }
 
-function registration_form({}) {
+function registration_form() {
     return `
         <form onsubmit="event.preventDefault(); window.command('registration_submit')">
+            ${link({ path: "checkout", content: "Go to checkout" })}
+
             ${text_field({ 
                 label: "Username", 
                 value: state.registration.username, 

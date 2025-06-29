@@ -66,9 +66,7 @@ const checkout_state = {
 }
 
 const checkout_commands = [
-    // i don't quite like the way of initializing this state.
-    // perhaps we could trigger a command when navigating the url...
-    function checkout_initialize() {
+    function checkout_initialization() {
         state.checkout.initialize_status = request_succeeded
 
         window.command("checkout_request_items")
@@ -373,7 +371,7 @@ function checkout_shipping_option({ id = 0, name = "", price = 0, delivery_time 
 
 function checkout_summary_order() {
     return `
-        <div style="background-color: white; width: 100%; padding: 10px;">
+        <div style="background-color: white; width: 100%;">
             <div style="justify-self: end; width: 480px; padding: 50px;">
                 <h2>Summary order</h2>
 
@@ -558,9 +556,6 @@ function checkout_form() {
 }
 
 function checkout_page() {
-    if (state.checkout.initialize_status === request_idle)
-        window.command("checkout_initialize")
-
     return `
         <div>
             ${checkout_top_menu()}

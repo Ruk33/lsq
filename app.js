@@ -1,4 +1,6 @@
 let state = {
+    page: "registration",
+
     value: 0,
     user: "someuser",
     password: "super-password",
@@ -12,6 +14,27 @@ let state = {
 
     last_command: { name: "", props: {} },
 }
+
+register_command(function navigate(path = "") {
+    if (path.startsWith("#"))
+        path = path.replace("#", "")
+
+    if (path === "registration") {
+        state.page = "registration"
+        window.command("registration_initialization")
+        navigate_to(path)
+        return
+    }
+
+    if (path === "checkout") {
+        state.page = "checkout"
+        window.command("checkout_initialization")
+        navigate_to(path)
+        return
+    }
+
+    window.command("navigate", "registration")
+})
 
 register_command(function increase() {
     state.value++
@@ -52,7 +75,15 @@ registration_commands.forEach(register_command)
 checkout_commands.forEach(register_command)
 
 function app() {
-    return checkout_page()
+    if (state.page === "registration")
+        return `<div>${registration_form()}</div>`
+
+    if (state.page === "checkout")
+        return `<div>${checkout_page()}</div>`
+
+    return `
+        <div>404, uh oh... not found?</div>
+    `
 
     // return `
     //     <div>
@@ -97,7 +128,7 @@ function app() {
 
 
     //             <div>
-    //                 ${registration_form({})}
+    //                 ${registration_form()}
     //             </div>
     //         </div>
     //     </div>
