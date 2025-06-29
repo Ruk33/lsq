@@ -55,9 +55,11 @@ function text_field({ label = "", value = "", errors = [""], input_props = "" })
                     value="${value}"
                 />
             </label>
-            <div style="color: red">${errors.map(function(error) {
-                return `<div>${error}</div>`
-            })}</div>
+            <div style="color: red">
+                ${errors.map(function(error) {
+                    return `<div>${error}</div>`
+                })}
+            </div>
         </div>
     `
 }
