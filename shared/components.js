@@ -58,7 +58,7 @@ function text_field({ label = "", value = "", errors = [""], input_props = "" })
             <div style="color: red">
                 ${errors.map(function(error) {
                     return `<div>${error}</div>`
-                })}
+                }).join("")}
             </div>
         </div>
     `

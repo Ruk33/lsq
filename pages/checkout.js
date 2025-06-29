@@ -412,7 +412,7 @@ function checkout_summary_order() {
                                 price: shipping_option.price,
                                 delivery_time: shipping_option.delivery_time,
                             })
-                        })}
+                        }).join("")}
                     </div>
 
                     <div style="display: ${state.checkout.shipping_options_status === request_pending ? "block" : "none"}">Loading shipping options...</div>
@@ -473,15 +473,15 @@ function checkout_form() {
                     <div style="color: red">
                         ${state.checkout.errors.card_number.map(function(error) {
                             return `<div>${error}</div>`
-                        })}
+                        }).join("")}
 
                         ${state.checkout.errors.card_expiry_mm_yy.map(function(error) {
                             return `<div>${error}</div>`
-                        })}
+                        }).join("")}
 
                         ${state.checkout.errors.card_cvc.map(function(error) {
                             return `<div>${error}</div>`
-                        })}
+                        }).join("")}
                     </div>
                 </label>
 
@@ -525,15 +525,15 @@ function checkout_form() {
                     <div style="color: red">
                         ${state.checkout.errors.billing_address.map(function(error) {
                             return `<div>${error}</div>`
-                        })}
+                        }).join("")}
 
                         ${state.checkout.errors.billing_country.map(function(error) {
                             return `<div>${error}</div>`
-                        })}
+                        }).join("")}
 
                         ${state.checkout.errors.billing_zip.map(function(error) {
                             return `<div>${error}</div>`
-                        })}
+                        }).join("")}
                     </div>
                 </label>
 
