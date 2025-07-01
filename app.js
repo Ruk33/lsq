@@ -6,35 +6,20 @@ let state = {
     password: "super-password",
     is_dialog_visible: false,
 
-    registration: registration_state,
+    registration: registration_state(),
 
     checkout: checkout_state(),
+
+    routes: {
+        "/checkout": "checkout_init",
+        "/register": "registration_init",
+        "user/:user_id/edit": "user_init",
+    },
 
     debug: true,
 
     last_command: { name: "", props: {} },
 }
-
-register_command(function navigate(path = "") {
-    if (path.startsWith("#"))
-        path = path.replace("#", "")
-
-    if (path === "registration") {
-        state.page = "registration"
-        window.command("registration_initialization")
-        navigate_to(path)
-        return
-    }
-
-    if (path === "checkout") {
-        state.page = "checkout"
-        window.command("checkout_initialization")
-        navigate_to(path)
-        return
-    }
-
-    window.command("navigate", "registration")
-})
 
 register_command(function increase() {
     state.value++

@@ -1,15 +1,17 @@
-const registration_state = {
-    username: "",
-    password: "",
-    confirm_password: "",
+function registration_state() {
+    return {
+        username: "",
+        password: "",
+        confirm_password: "",
 
-    errors: {
-        username: [""],
-        password: [""],
-        confirm_password: [""],
-    },
+        errors: {
+            username: [""],
+            password: [""],
+            confirm_password: [""],
+        },
 
-    submitting: false,
+        submitting: false,
+    }
 }
 
 const registration_commands = [
