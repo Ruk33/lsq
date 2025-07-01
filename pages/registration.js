@@ -15,6 +15,10 @@ function registration_state() {
 }
 
 const registration_commands = [
+    function registration_init() {
+        state.page = "registration"
+    },
+
     function registration_set_username(username = "") {
         username = username.toUpperCase()
 

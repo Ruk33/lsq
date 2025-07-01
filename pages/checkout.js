@@ -68,8 +68,10 @@ function checkout_state() {
 }
 
 const checkout_commands = [
-    function checkout_initialization() {
+    function checkout_init() {
         state.checkout = checkout_state()
+
+        state.page = "checkout"
 
         window.command("checkout_request_items")
 

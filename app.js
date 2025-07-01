@@ -21,6 +21,10 @@ let state = {
     last_command: { name: "", props: {} },
 }
 
+register_command(function navigate_404() {
+    navigate_to("register")
+})
+
 register_command(function increase() {
     state.value++
 })
