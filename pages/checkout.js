@@ -159,11 +159,20 @@ const checkout_commands = [
     },
 
     async function checkout_request_shipping_options() {
-        state.checkout.shipping_options_status = request_pending
+        state.checkout.shipping_options_status = checkout_state().shipping_options_status
 
         state.checkout.shipping_options = checkout_state().shipping_options
 
         state.checkout.shipping_option = checkout_state().shipping_option
+
+        const shipping_fields = ["billing_address", "billing_country", "billing_zip"]
+
+        const shipping_fields_are_invalid = invalid(state.checkout.errors, shipping_fields)
+
+        if (shipping_fields_are_invalid)
+            return
+
+        state.checkout.shipping_options_status = request_pending
 
         await sleep_for(4000)
 
@@ -245,7 +254,6 @@ const checkout_commands = [
 
         state.checkout.errors.billing_address = checkout_validate_billing_address(billing_address)
 
-        // window.command("checkout_request_shipping_options")
         checkout_debounced_request_shipping_options()
     },
 
@@ -254,7 +262,6 @@ const checkout_commands = [
 
         state.checkout.errors.billing_country = checkout_validate_billing_country(billing_country)
 
-        // window.command("checkout_request_shipping_options")
         checkout_debounced_request_shipping_options()
     },
 
@@ -263,7 +270,6 @@ const checkout_commands = [
 
         state.checkout.errors.billing_zip = checkout_validate_billing_zip(billing_zip)
 
-        // window.command("checkout_request_shipping_options")
         checkout_debounced_request_shipping_options()
     },
 
