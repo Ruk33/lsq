@@ -214,15 +214,9 @@ function checkout_set_card_number(card_number = "") {
     state.checkout.errors.card_number = checkout_validate_card_number(card_number)
 }
 
-function checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy = "", dom = { setSelectionRange: function(start = 0, end = 0) {} }, cursor_position = -1 }) {
+function checkout_set_card_expiry_mm_yy(card_expiry_mm_yy = "") {
     // very basic input masking.
     // can be better, this is just a demo.
-
-    if (cursor_position !== -1) {
-        dom.setSelectionRange(cursor_position, cursor_position)
-        return
-    }
-    
     const aggregate_slash = /^\d{2}$/.test(card_expiry_mm_yy)
 
     if (aggregate_slash)
@@ -231,11 +225,6 @@ function checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy = "", dom = { setSel
     state.checkout.card_expiry_mm_yy = card_expiry_mm_yy
 
     state.checkout.errors.card_expiry_mm_yy = checkout_validate_card_expiry_mm_yy(card_expiry_mm_yy)
-
-    if (aggregate_slash)
-        after_render(function() {
-            checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy, dom, cursor_position: card_expiry_mm_yy.length, })
-        })
 }
 
 function checkout_set_card_cvc(card_cvc = "") {
@@ -463,7 +452,7 @@ function checkout_form() {
                         />
                         <input
                             type="text"
-                            oninput="checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy: event.target.value, dom: event.target, })"
+                            oninput="checkout_set_card_expiry_mm_yy(event.target.value)"
                             value="${state.checkout.card_expiry_mm_yy}"
                             placeholder="MM/YY"
                             style="padding: 0; border: 0; width: 50%; outline: none;"
