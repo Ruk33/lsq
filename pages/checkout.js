@@ -1,6 +1,6 @@
 function checkout_state() {
     return {
-        initialize_status: request_idle,
+        initialize_status: idle,
 
         email_address: "",
         card_number: "",
@@ -31,7 +31,7 @@ function checkout_state() {
             stock: 0,
         }],
 
-        items_status: request_idle,
+        items_status: idle,
 
         promotions: [{
             id: 0,
@@ -48,7 +48,7 @@ function checkout_state() {
             }],
         }],
 
-        promotions_status: request_idle,
+        promotions_status: idle,
 
         shipping_options: [{
             id: 0,
@@ -57,7 +57,7 @@ function checkout_state() {
             delivery_time: "",
         }],
 
-        shipping_options_status: request_idle,
+        shipping_options_status: idle,
 
         shipping_option: -1,
 
@@ -67,227 +67,225 @@ function checkout_state() {
     }
 }
 
-const checkout_commands = [
-    function checkout_init() {
-        state.checkout = checkout_state()
+function checkout_init() {
+    state.checkout = checkout_state()
 
-        state.page = "checkout"
+    state.page = "checkout"
 
-        window.command("checkout_request_items")
+    checkout_request_items()
 
-        window.command("checkout_request_promotions")
-    },
+    checkout_request_promotions()
+}
 
-    async function checkout_request_items() {
-        state.checkout.items_status = request_pending
+async function checkout_request_items() {
+    state.checkout.items_status = pending
 
-        await sleep_for(4000)
+    await sleep_for(4000)
 
-        const items = [
-            {
-                id: 1,
-                name: "T-Shirt",
-                price: 200,
-                quantity: 1,
-                stock: 2,
-                image: "public/tshirt-1.png",
-            },
-            {
-                id: 2,
-                name: "Pullover + Hat",
-                price: 400,
-                quantity: 2,
-                stock: 10,
-                image: "public/pullover-hat-2.png",
-            }
-        ]
-
-        window.command("checkout_set_items", items)
-    },
-
-    function checkout_set_items(items = checkout_state().items) {
-        if (request_was_aborted(state.checkout.items_status))
-            return
-
-        state.checkout.items_status = request_succeeded
-
-        state.checkout.items = items
-    },
-
-    async function checkout_request_promotions() {
-        state.checkout.promotions_status = request_pending
-
-        await sleep_for(2000)
-
-        const promotions = [
-            {
-                id: 100,
-                name: "10% off!",
-                triggers: [],
-                actions: [{
-                    ids: [],
-                    discount_amount: 10,
-                    is_fixed_discount: false,
-                    discounts_each_unit: false
-                }]
-            }
-        ]
-
-        window.command("checkout_set_promotions", promotions)
-
-        // we can't use fetch in localhost because cors, yay!
-        //
-        // fetch("seed/promotions.json")
-        //     .then(function(response) {
-        //         return response.json()
-        //     })
-        //     .then(function(promotions) {
-        //         window.command("checkout_set_promotions", promotions)
-        //     })
-        //     .catch(function() {
-        //         window.command("checkout_set_promotions", [])
-        //     })
-    },
-
-    function checkout_set_promotions(promotions = checkout_state().promotions) {
-        if (request_was_aborted(state.checkout.promotions_status))
-            return
-
-        state.checkout.promotions_status = request_succeeded
-
-        state.checkout.promotions = promotions
-    },
-
-    async function checkout_request_shipping_options() {
-        state.checkout.shipping_options_status = checkout_state().shipping_options_status
-
-        state.checkout.shipping_options = checkout_state().shipping_options
-
-        state.checkout.shipping_option = checkout_state().shipping_option
-
-        const shipping_fields = ["billing_address", "billing_country", "billing_zip"]
-
-        const shipping_fields_are_invalid = invalid(state.checkout.errors, shipping_fields)
-
-        if (shipping_fields_are_invalid)
-            return
-
-        state.checkout.shipping_options_status = request_pending
-
-        await sleep_for(4000)
-
-        const shipping_options = [
-            {
-                id: 3,
-                name: "Fedex",
-                price: 200,
-                delivery_time: "2 days",
-            },
-            {
-                id: 4,
-                name: "DHL Delivery",
-                price: 0,
-                delivery_time: "10 days",
-            },
-        ]
-
-        window.command("checkout_set_shipping_options", shipping_options)
-    },
-
-    function checkout_set_shipping_options(shipping_options = checkout_state().shipping_options) {
-        if (request_was_aborted(state.checkout.shipping_options_status))
-            return
-
-        state.checkout.shipping_options_status = request_succeeded
-
-        state.checkout.shipping_options = shipping_options
-    },
-
-    function checkout_set_email_address(email = "") {
-        state.checkout.email_address = email
-
-        state.checkout.errors.email_address = checkout_validate_email_address(email)
-    },
-
-    function checkout_set_card_number(card_number = "") {
-        state.checkout.card_number = card_number
-
-        state.checkout.errors.card_number = checkout_validate_card_number(card_number)
-    },
-
-    function checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy = "", dom = { setSelectionRange: function(start = 0, end = 0) {} }, cursor_position = -1 }) {
-        // very basic input masking.
-        // can be better, this is just a demo.
-
-        if (cursor_position !== -1) {
-            dom.setSelectionRange(cursor_position, cursor_position)
-            return
+    const items = [
+        {
+            id: 1,
+            name: "T-Shirt",
+            price: 200,
+            quantity: 1,
+            stock: 2,
+            image: "public/tshirt-1.png",
+        },
+        {
+            id: 2,
+            name: "Pullover + Hat",
+            price: 400,
+            quantity: 2,
+            stock: 10,
+            image: "public/pullover-hat-2.png",
         }
-        
-        const aggregate_slash = /^\d{2}$/.test(card_expiry_mm_yy)
+    ]
 
-        if (aggregate_slash)
-            card_expiry_mm_yy = `${card_expiry_mm_yy}/`
+    checkout_set_items(items)
+}
 
-        state.checkout.card_expiry_mm_yy = card_expiry_mm_yy
+function checkout_set_items(items = checkout_state().items) {
+    if (request_was_aborted(state.checkout.items_status))
+        return
 
-        state.checkout.errors.card_expiry_mm_yy = checkout_validate_card_expiry_mm_yy(card_expiry_mm_yy)
+    state.checkout.items_status = succeed
 
-        if (aggregate_slash)
-            window.queue_command("checkout_set_card_expiry_mm_yy", { card_expiry_mm_yy, dom, cursor_position: card_expiry_mm_yy.length, })
-    },
+    state.checkout.items = items
+}
 
-    function checkout_set_card_cvc(card_cvc = "") {
-        state.checkout.card_cvc = card_cvc
+async function checkout_request_promotions() {
+    state.checkout.promotions_status = pending
 
-        state.checkout.errors.card_cvc = checkout_validate_card_cvc(card_cvc)
-    },
+    await sleep_for(2000)
 
-    function checkout_set_card_holder(card_holder = "") {
-        state.checkout.card_holder = card_holder
+    const promotions = [
+        {
+            id: 100,
+            name: "10% off!",
+            triggers: [],
+            actions: [{
+                ids: [],
+                discount_amount: 10,
+                is_fixed_discount: false,
+                discounts_each_unit: false
+            }]
+        }
+    ]
 
-        state.checkout.errors.card_holder = checkout_validate_card_holder(card_holder)
-    },
+    checkout_set_promotions(promotions)
 
-    function checkout_set_billing_address(billing_address = "") {
-        state.checkout.billing_address = billing_address
+    // we can't use fetch in localhost because cors, yay!
+    //
+    // fetch("seed/promotions.json")
+    //     .then(function(response) {
+    //         return response.json()
+    //     })
+    //     .then(function(promotions) {
+    //         checkout_set_promotions(promotions)
+    //     })
+    //     .catch(function() {
+    //         checkout_set_promotions([])
+    //     })
+}
 
-        state.checkout.errors.billing_address = checkout_validate_billing_address(billing_address)
+function checkout_set_promotions(promotions = checkout_state().promotions) {
+    if (request_was_aborted(state.checkout.promotions_status))
+        return
 
-        checkout_debounced_request_shipping_options()
-    },
+    state.checkout.promotions_status = succeed
 
-    function checkout_set_billing_country(billing_country = "") {
-        state.checkout.billing_country = billing_country
+    state.checkout.promotions = promotions
+}
 
-        state.checkout.errors.billing_country = checkout_validate_billing_country(billing_country)
+async function checkout_request_shipping_options() {
+    state.checkout.shipping_options_status = checkout_state().shipping_options_status
 
-        checkout_debounced_request_shipping_options()
-    },
+    state.checkout.shipping_options = checkout_state().shipping_options
 
-    function checkout_set_billing_zip(billing_zip = "") {
-        state.checkout.billing_zip = billing_zip
+    state.checkout.shipping_option = checkout_state().shipping_option
 
-        state.checkout.errors.billing_zip = checkout_validate_billing_zip(billing_zip)
+    const shipping_fields = ["billing_address", "billing_country", "billing_zip"]
 
-        checkout_debounced_request_shipping_options()
-    },
+    const shipping_fields_are_invalid = invalid(state.checkout.errors, shipping_fields)
 
-    function checkout_set_shipping(shipping_option = 0) {
-        const valid_shipping = state.checkout.shipping_options.find(function(valid_shipping_option) {
-            return valid_shipping_option.id === shipping_option
+    if (shipping_fields_are_invalid)
+        return
+
+    state.checkout.shipping_options_status = pending
+
+    await sleep_for(4000)
+
+    const shipping_options = [
+        {
+            id: 3,
+            name: "Fedex",
+            price: 200,
+            delivery_time: "2 days",
+        },
+        {
+            id: 4,
+            name: "DHL Delivery",
+            price: 0,
+            delivery_time: "10 days",
+        },
+    ]
+
+    checkout_set_shipping_options(shipping_options)
+}
+
+function checkout_set_shipping_options(shipping_options = checkout_state().shipping_options) {
+    if (request_was_aborted(state.checkout.shipping_options_status))
+        return
+
+    state.checkout.shipping_options_status = succeed
+
+    state.checkout.shipping_options = shipping_options
+}
+
+function checkout_set_email_address(email = "") {
+    state.checkout.email_address = email
+
+    state.checkout.errors.email_address = checkout_validate_email_address(email)
+}
+
+function checkout_set_card_number(card_number = "") {
+    state.checkout.card_number = card_number
+
+    state.checkout.errors.card_number = checkout_validate_card_number(card_number)
+}
+
+function checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy = "", dom = { setSelectionRange: function(start = 0, end = 0) {} }, cursor_position = -1 }) {
+    // very basic input masking.
+    // can be better, this is just a demo.
+
+    if (cursor_position !== -1) {
+        dom.setSelectionRange(cursor_position, cursor_position)
+        return
+    }
+    
+    const aggregate_slash = /^\d{2}$/.test(card_expiry_mm_yy)
+
+    if (aggregate_slash)
+        card_expiry_mm_yy = `${card_expiry_mm_yy}/`
+
+    state.checkout.card_expiry_mm_yy = card_expiry_mm_yy
+
+    state.checkout.errors.card_expiry_mm_yy = checkout_validate_card_expiry_mm_yy(card_expiry_mm_yy)
+
+    if (aggregate_slash)
+        after_render(function() {
+            checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy, dom, cursor_position: card_expiry_mm_yy.length, })
         })
+}
 
-        if (!valid_shipping)
-            shipping_option = -1
+function checkout_set_card_cvc(card_cvc = "") {
+    state.checkout.card_cvc = card_cvc
 
-        state.checkout.shipping_option = shipping_option
-    },
-]
+    state.checkout.errors.card_cvc = checkout_validate_card_cvc(card_cvc)
+}
 
-const checkout_debounced_request_shipping_options = debounce(function() {
-    window.command("checkout_request_shipping_options")
-})
+function checkout_set_card_holder(card_holder = "") {
+    state.checkout.card_holder = card_holder
+
+    state.checkout.errors.card_holder = checkout_validate_card_holder(card_holder)
+}
+
+function checkout_set_billing_address(billing_address = "") {
+    state.checkout.billing_address = billing_address
+
+    state.checkout.errors.billing_address = checkout_validate_billing_address(billing_address)
+
+    checkout_debounced_request_shipping_options()
+}
+
+function checkout_set_billing_country(billing_country = "") {
+    state.checkout.billing_country = billing_country
+
+    state.checkout.errors.billing_country = checkout_validate_billing_country(billing_country)
+
+    checkout_debounced_request_shipping_options()
+}
+
+function checkout_set_billing_zip(billing_zip = "") {
+    state.checkout.billing_zip = billing_zip
+
+    state.checkout.errors.billing_zip = checkout_validate_billing_zip(billing_zip)
+
+    checkout_debounced_request_shipping_options()
+}
+
+function checkout_set_shipping(shipping_option = 0) {
+    const valid_shipping = state.checkout.shipping_options.find(function(valid_shipping_option) {
+        return valid_shipping_option.id === shipping_option
+    })
+
+    if (!valid_shipping)
+        shipping_option = -1
+
+    state.checkout.shipping_option = shipping_option
+}
+
+const checkout_debounced_request_shipping_options = debounce(checkout_request_shipping_options, 300)
 
 function checkout_validate_email_address(email = "") {
     return [
@@ -380,7 +378,7 @@ function checkout_shipping_option({ id = 0, name = "", price = 0, delivery_time 
                 <input
                     type="radio"
                     name="shipping_option"
-                    oninput="window.command('checkout_set_shipping', ${id})"
+                    oninput="checkout_set_shipping(${id})"
                     ${state.checkout.shipping_option === id ? "checked" : ""}
                 />
             </div>
@@ -397,7 +395,7 @@ function checkout_summary_order() {
                 <p>Check your items and select your shipping.</p>
 
                 <div style="padding: 20px; border: 2px solid #ececec; border-radius: 5px; display: grid; gap: 10px;">
-                    ${state.checkout.items_status === request_succeeded ? state.checkout.items.map(function(item) {
+                    ${state.checkout.items_status === succeed ? state.checkout.items.map(function(item) {
                         return checkout_item({
                             name: item.name,
                             image: item.image,
@@ -406,13 +404,13 @@ function checkout_summary_order() {
                         })
                     }).join("") : ""}
 
-                    ${state.checkout.items_status === request_pending ? "Loading items..." : ""}
+                    ${state.checkout.items_status === pending ? "Loading items..." : ""}
                 </div>
 
                 <h4>Available shipping options</h4>
 
                 <div style="padding: 20px; border: 2px solid #ececec; border-radius: 5px;">
-                    <div style="display: ${state.checkout.shipping_options_status === request_succeeded ? "grid" : "none"}; gap: 10px;">
+                    <div style="display: ${state.checkout.shipping_options_status === succeed ? "grid" : "none"}; gap: 10px;">
                         ${state.checkout.shipping_options.map(function(shipping_option) {
                             return checkout_shipping_option({
                                 id: shipping_option.id,
@@ -423,9 +421,9 @@ function checkout_summary_order() {
                         }).join("")}
                     </div>
 
-                    <div style="display: ${state.checkout.shipping_options_status === request_pending ? "block" : "none"}">Loading shipping options...</div>
+                    <div style="display: ${state.checkout.shipping_options_status === pending ? "block" : "none"}">Loading shipping options...</div>
 
-                    <div style="display: ${state.checkout.shipping_options_status === request_idle ? "block" : "none"}">
+                    <div style="display: ${state.checkout.shipping_options_status === idle ? "block" : "none"}">
                         Update your billing address to see the shipping options.
                     </div>
                 </div>
@@ -439,7 +437,7 @@ function checkout_form() {
         <div style="background-color: #f9fafc; width: 100%;">
             <form
                 style="width: 480px; padding: 50px; display: grid; gap: 20px;"
-                onsubmit="event.preventDefault(); window.command('checkout_submit');"
+                onsubmit="event.preventDefault(); checkout_submit();"
             >
                 <h2>Shipping & payment details</h2>
             
@@ -449,7 +447,7 @@ function checkout_form() {
                     label: "Email address",
                     value: state.checkout.email_address,
                     errors: state.checkout.errors.email_address,
-                    input_props: `placeholder="john@doe.com" oninput="window.command('checkout_set_email_address', event.target.value)"`
+                    input_props: `placeholder="john@doe.com" oninput="checkout_set_email_address(event.target.value)"`
                 })}
 
                 <label style="display: block;">
@@ -458,21 +456,21 @@ function checkout_form() {
                     <div style="display: flex; align-items: center; justify-content: center; border: 2px solid #ececec; border-radius: 5px; padding: 10px; background-color: white;">
                         <input 
                             type="text" 
-                            oninput="window.command('checkout_set_card_number', event.target.value)" 
+                            oninput="checkout_set_card_number(event.target.value)" 
                             value="${state.checkout.card_number}"
                             placeholder="Card details" 
                             style="padding: 0; border: 0; width: 100%; outline: none;"
                         />
                         <input
                             type="text"
-                            oninput="window.command('checkout_set_card_expiry_mm_yy', { card_expiry_mm_yy: event.target.value, dom: event.target, })"
+                            oninput="checkout_set_card_expiry_mm_yy({ card_expiry_mm_yy: event.target.value, dom: event.target, })"
                             value="${state.checkout.card_expiry_mm_yy}"
                             placeholder="MM/YY"
                             style="padding: 0; border: 0; width: 50%; outline: none;"
                         />
                         <input
                             type="text"
-                            oninput="window.command('checkout_set_card_cvc', event.target.value)"
+                            oninput="checkout_set_card_cvc(event.target.value)"
                             value="${state.checkout.card_cvc}"
                             placeholder="CVC" style="padding: 0; border: 0; width: 50%; outline: none;"
                         />
@@ -497,7 +495,7 @@ function checkout_form() {
                     label: "Card holder",
                     value: state.checkout.card_holder,
                     errors: state.checkout.errors.card_holder,
-                    input_props: `placeholder="John Doe" oninput="window.command('checkout_set_card_holder', event.target.value)"`
+                    input_props: `placeholder="John Doe" oninput="checkout_set_card_holder(event.target.value)"`
                 })}
 
                 <label style="display: block;">
@@ -506,7 +504,7 @@ function checkout_form() {
                     <div style="border: 2px solid #ececec; border-radius: 5px; background-color: white;">
                         <input 
                             type="text"
-                            oninput="window.command('checkout_set_billing_address', event.target.value)"
+                            oninput="checkout_set_billing_address(event.target.value)"
                             value="${state.checkout.billing_address}"
                             placeholder="Address"
                             style="padding: 10px; border: 0; width: calc(100% - 20px); outline: none;" 
@@ -515,14 +513,14 @@ function checkout_form() {
                         <div style="display: flex; align-items: center; justify-content: center; border-top: 2px solid #ececec; background-color: white;">
                             <input
                                 type="text"
-                                oninput="window.command('checkout_set_billing_country', event.target.value)"
+                                oninput="checkout_set_billing_country(event.target.value)"
                                 value="${state.checkout.billing_country}"
                                 placeholder="California"
                                 style="padding: 0; border: 0; border-right: 2px solid #ececec; padding: 10px; width: 50%; outline: none;"
                             />
                             <input
                                 type="text"
-                                oninput="window.command('checkout_set_billing_zip', event.target.value)"
+                                oninput="checkout_set_billing_zip(event.target.value)"
                                 value="${state.checkout.billing_zip}"
                                 placeholder="92648"
                                 style="padding: 0; border: 0; padding: 10px; width: 50%; outline: none;"
