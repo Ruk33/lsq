@@ -57,6 +57,8 @@ function checkout_state() {
             delivery_time: "",
         }],
 
+        shipping_options_request_id: 0,
+
         shipping_options_status: idle,
 
         shipping_option: -1,
@@ -105,8 +107,8 @@ async function checkout_request_items() {
 }
 
 function checkout_set_items(items = checkout_state().items) {
-    if (request_was_aborted(state.checkout.items_status))
-        return
+    // if (request_was_aborted(state.checkout.items_status))
+    //     return
 
     state.checkout.items_status = succeed
 
@@ -149,15 +151,17 @@ async function checkout_request_promotions() {
 }
 
 function checkout_set_promotions(promotions = checkout_state().promotions) {
-    if (request_was_aborted(state.checkout.promotions_status))
-        return
+    // if (request_was_aborted(state.checkout.promotions_status))
+    //     return
 
     state.checkout.promotions_status = succeed
 
     state.checkout.promotions = promotions
 }
 
-async function checkout_request_shipping_options() {
+function checkout_request_shipping_options() {
+    ignore_request(state.checkout.shipping_options_request_id)
+
     state.checkout.shipping_options_status = checkout_state().shipping_options_status
 
     state.checkout.shipping_options = checkout_state().shipping_options
@@ -171,31 +175,52 @@ async function checkout_request_shipping_options() {
     if (shipping_fields_are_invalid)
         return
 
-    state.checkout.shipping_options_status = pending
+    state.checkout.shipping_options_request_id = fetch_json("https://api.chucknorris.io/jokes/random", {}, function() {
+        console.log("request completed!")
 
-    await sleep_for(4000)
+        const shipping_options = [
+            {
+                id: 3,
+                name: "Fedex",
+                price: 200,
+                delivery_time: "2 days",
+            },
+            {
+                id: 4,
+                name: "DHL Delivery",
+                price: 0,
+                delivery_time: "10 days",
+            },
+        ]
 
-    const shipping_options = [
-        {
-            id: 3,
-            name: "Fedex",
-            price: 200,
-            delivery_time: "2 days",
-        },
-        {
-            id: 4,
-            name: "DHL Delivery",
-            price: 0,
-            delivery_time: "10 days",
-        },
-    ]
+        checkout_set_shipping_options(shipping_options)
+    })
 
-    checkout_set_shipping_options(shipping_options)
+    // state.checkout.shipping_options_status = pending
+
+    // await sleep_for(4000)
+
+    // const shipping_options = [
+    //     {
+    //         id: 3,
+    //         name: "Fedex",
+    //         price: 200,
+    //         delivery_time: "2 days",
+    //     },
+    //     {
+    //         id: 4,
+    //         name: "DHL Delivery",
+    //         price: 0,
+    //         delivery_time: "10 days",
+    //     },
+    // ]
+
+    // checkout_set_shipping_options(shipping_options)
 }
 
 function checkout_set_shipping_options(shipping_options = checkout_state().shipping_options) {
-    if (request_was_aborted(state.checkout.shipping_options_status))
-        return
+    // if (request_was_aborted(state.checkout.shipping_options_status))
+    //     return
 
     state.checkout.shipping_options_status = succeed
 

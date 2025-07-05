@@ -1,20 +1,3 @@
-// const state = {
-//     username: "john",
-//     password: "doe",
-//     jokes: [""],
-//     request_jokes_status: idle,
-//     number: 0,
-
-//     page: "",
-
-//     page_params: {},
-
-//     pages: {
-//         "/": "index",
-//         "/user/:user_id/update": "update_user",
-//     }
-// }
-
 const state = {
     page: "",
 
