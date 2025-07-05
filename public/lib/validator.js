@@ -148,3 +148,12 @@ globalThis.invalid = function invalid(fields = { field_name: [""] }, fields_to_c
 globalThis.valid = function valid(fields = { field_name: [""] }, fields_to_check = ["*"]) {
     return !invalid(fields, fields_to_check)
 }
+
+globalThis.empty_errors = function empty_errors(fields = {}) {
+    const errors = {}
+
+    for (const field_name in fields)
+        errors[field_name] = [""]
+
+    return errors
+}
