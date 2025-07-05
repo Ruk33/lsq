@@ -65,7 +65,7 @@ function set_page_from_current_url() {
         }
     }
 
-    default_init()
+    default_page_init()
 }
 
 window.addEventListener("popstate", set_page_from_current_url)
