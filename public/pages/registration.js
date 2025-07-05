@@ -75,23 +75,15 @@ function registration_error() {
 }
 
 function registration_validate_username(username = "") {
-    return [
-        is_present(username) ? "" : "The username is required!",
-        is_text_between(username, 2, 10) ? "" : "The username must be between 2 and 10 characters long",
-    ].filter(Boolean)
+    return user_validate_username(username)
 }
 
 function registration_validate_password(password = "") {
-    return [
-        is_present(password) ? "" : "The password is required!",
-        is_text_between(password, 2, 10) ? "" : "The password must be between 2 and 10 characters long",
-    ].filter(Boolean)
+    return user_validate_password(password)
 }
 
 function registration_validate_confirm_password(password = "", confirm_password = "") {
-    return [
-        is_equal(password, confirm_password) ? "" : "The passwords do not match",
-    ].filter(Boolean)
+    return user_validate_confirm_password(password, confirm_password)
 }
 
 function registration_form() {

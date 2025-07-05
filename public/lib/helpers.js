@@ -1,18 +1,18 @@
-function now() {
+globalThis.now = function now() {
     return Date.now()
 }
 
-function do_nothing() {
+globalThis.do_nothing = function do_nothing() {
     
 }
 
-function sleep_for(ms = 0) {
+globalThis.sleep_for = function sleep_for(ms = 0) {
     return new Promise(function(resolve) {
         setTimeout(resolve, ms);
     })
 }
 
-function debounce(fn = function() {}, ms = 0) {
+globalThis.debounce = function debounce(fn = function() {}, ms = 0) {
     let timer = -1
 
     return function() {

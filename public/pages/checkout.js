@@ -91,7 +91,7 @@ async function checkout_request_items() {
             price: 200,
             quantity: 1,
             stock: 2,
-            image: "public/tshirt-1.png",
+            image: "tshirt-1.png",
         },
         {
             id: 2,
@@ -99,7 +99,7 @@ async function checkout_request_items() {
             price: 400,
             quantity: 2,
             stock: 10,
-            image: "public/pullover-hat-2.png",
+            image: "pullover-hat-2.png",
         }
     ]
 
