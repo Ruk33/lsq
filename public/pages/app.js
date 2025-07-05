@@ -6,18 +6,17 @@ const state = {
     pages: {
         "/checkout": checkout_init,
         "/register": registration_init,
-        // "user/:user_id/edit": "user",
+        // "user/:user_id/edit": user_edit_init,
     },
 
     jokes: [""],
-    request_jokes_status: idle,
+
+    jokes_request_status: idle,
 
     value: 0,
     
     username: "john",
     password: "doe",
-
-    is_dialog_visible: false,
 
     registration: registration_state(),
 
@@ -29,21 +28,25 @@ function default_init() {
 }
 
 function request_more_jokes() {
-    if (state.request_jokes_status === pending)
+    if (state.jokes_request_status === pending)
         return
 
-    state.request_jokes_status = pending
+    console.log("new joke being requested!")
 
-    console.log("new joke requested!")
+    state.jokes_request_status = pending
 
-    fetch("https://api.chucknorris.io/jokes/random")
-        .then(response_to_json)
-        .then(function(joke) {
+    fetch_json(
+        "https://api.chucknorris.io/jokes/random", 
+        {}, 
+        function(joke) {
+            state.jokes_request_status = succeed
+
             add_jokes([joke.value])
-        })
-        .finally(function() {
-            state.request_jokes_status = idle
-        })
+        },
+        function() {
+            state.jokes_request_status = failed
+        }
+    )
 }
 
 function add_jokes(new_jokes = [""]) {
@@ -77,7 +80,7 @@ function demo_page() {
             return `<div style="height: 200px; background-color: lightgreen;">${joke}</div>`
         }).join("")}
 
-        ${state.request_jokes_status === pending && `<div>Loading...</div>`}
+        ${state.jokes_request_status === pending && `<div>Loading...</div>`}
 
         <div style="height: 20px; width: 100%; background-color: red;" onviewport="request_more_jokes()"></div>
     `

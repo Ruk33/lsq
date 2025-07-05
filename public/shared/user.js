@@ -10,7 +10,7 @@ globalThis.user_validate = function is_user_invalid(user = user_fields()) {
     const errors = {
         username: user_validate_username(user.username),
         password: user_validate_password(user.password),
-        confirm_password: user_validate_confirm_password(user.confirm_password),
+        confirm_password: user_validate_confirm_password(user.password, user.confirm_password),
     }
 
     return errors
