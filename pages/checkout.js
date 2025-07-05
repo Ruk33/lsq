@@ -303,54 +303,54 @@ const checkout_debounced_request_shipping_options = debounce(checkout_request_sh
 
 function checkout_validate_email_address(email = "") {
     return [
-        valid_email(email) ? "" : "Invalid email"
+        is_email(email) ? "" : "Invalid email"
     ].filter(Boolean)
 }
 
 function checkout_validate_card_number(card_number = "") {
     return [
-        valid_presence(card_number) ? "" : "The card number is required"
+        is_present(card_number) ? "" : "The card number is required"
     ].filter(Boolean)
 }
 
 function checkout_validate_card_expiry_mm_yy(card_expiry_mm_yy = "") {
-    const valid_format = /^\d{2}\/\d{2}$/.test(card_expiry_mm_yy)
+    const valid_format = /^\d{2}\/\d{2}$/
 
     return [
-        valid_format ? "" : "The card expiry is incorrect. The format must be MM/YY"
+        matches_regexp(card_expiry_mm_yy, valid_format) ? "" : "The card expiry is incorrect. The format must be MM/YY"
     ].filter(Boolean)
 }
 
 function checkout_validate_card_cvc(card_cvc = "") {
-    const valid_format = /^\d{3}$/.test(card_cvc)
+    const valid_format = /^\d{3}$/
 
     return [
-        valid_presence(card_cvc) ? "" : "Card CVC is required",
-        valid_format ? "" : "Card CVC must be 3 numbers"
+        is_present(card_cvc) ? "" : "Card CVC is required",
+        matches_regexp(card_cvc, valid_format) ? "" : "Card CVC must be 3 numbers"
     ].filter(Boolean)
 }
 
 function checkout_validate_card_holder(card_holder = "") {
     return [
-        valid_presence(card_holder) ? "" : "Card holder is required",
+        is_present(card_holder) ? "" : "Card holder is required",
     ].filter(Boolean)
 }
 
 function checkout_validate_billing_address(billing_address = "") {
     return [
-        valid_presence(billing_address) ? "" : "Billing address is required",
+        is_present(billing_address) ? "" : "Billing address is required",
     ].filter(Boolean)
 }
 
 function checkout_validate_billing_country(billing_country = "") {
     return [
-        valid_presence(billing_country) ? "" : "Billing country is required",
+        is_present(billing_country) ? "" : "Billing country is required",
     ].filter(Boolean)
 }
 
 function checkout_validate_billing_zip(billing_zip = "") {
     return [
-        valid_presence(billing_zip) ? "" : "Billing zip is required",
+        is_present(billing_zip) ? "" : "Billing zip is required",
     ].filter(Boolean)
 }
 

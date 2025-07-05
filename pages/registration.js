@@ -76,23 +76,21 @@ function registration_error() {
 
 function registration_validate_username(username = "") {
     return [
-        missing(username) ? "The username is required!" : "",
-        undersized(username, 2) ? "The username must be at least 2 characters long" : "",
-        oversized(username, 10) ? "The username can't be longer than 10 characters" : "",
+        is_present(username) ? "" : "The username is required!",
+        is_text_between(username, 2, 10) ? "" : "The username must be between 2 and 10 characters long",
     ].filter(Boolean)
 }
 
 function registration_validate_password(password = "") {
     return [
-        missing(password) ? "The password is required!" : "",
-        undersized(password, 2) ? "The password must be at least 2 characters long" : "",
-        oversized(password, 10) ? "The password can't be longer than 10 characters" : "",
+        is_present(password) ? "" : "The password is required!",
+        is_text_between(password, 2, 10) ? "" : "The password must be between 2 and 10 characters long",
     ].filter(Boolean)
 }
 
 function registration_validate_confirm_password(password = "", confirm_password = "") {
     return [
-        unequal(password, confirm_password) ? "The passwords do not match" : "",
+        is_equal(password, confirm_password) ? "" : "The passwords do not match",
     ].filter(Boolean)
 }
 
