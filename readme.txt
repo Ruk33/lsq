@@ -229,28 +229,28 @@ HOW TO DO VALIDATION?
       backend can make use of it:
 
     --
-    globalThis.validate_username = function validate_username(username = "") {
+    globalThis.username_errors = function username_errors(username = "") {
         return [
-            is_present(username) ? "" : "The username is required"
-        ].filter(Boolean)
+            is_present(username, "The username is required"),
+        ]
     }
     --
 
-    Note: "globalThis.validate_username" is only required if you inteend
+    Note: "globalThis.username_errors" is only required if you intend
     to use this function in both, the frontend and the backend. If you only
     want this function in the frontend, you don't need this assignment.
 
     - You can then validate and check if each field is valid:
 
     --
-    state.errors.username = validate_username(state.fields.username)
+    state.errors.username = username_errors(state.fields.username)
     --
 
     - And finally, check if the entire set is valid/invalid:
 
     --
-    state.errors.username = validate ...
-    state.errors.password = validate ...
+    state.errors.username = username_errors(...)
+    state.errors.password = password_errors(...)
 
     valid(state.errors)
     invalid(state.errors)
