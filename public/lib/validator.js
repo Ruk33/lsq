@@ -1,63 +1,71 @@
-const min_number = Number.MIN_SAFE_INTEGER
-globalThis.min_number = min_number
+globalThis.min_number = Number.MIN_SAFE_INTEGER
 
-const max_number = Number.MAX_SAFE_INTEGER
-globalThis.max_number = max_number
+globalThis.max_number = Number.MAX_SAFE_INTEGER
 
-globalThis.matches_regexp = function matches_regexp(value = "", reg_exp = new RegExp()) {
-    return reg_exp.test(value)
+globalThis.fails_at = function fails_at(error_message = "") {
+    const has_error_message = error_message !== ""
+
+    return has_error_message
 }
 
-globalThis.is_url = function is_url(value = "") {
+globalThis.passes_at = function passes_at(error_message = "") {
+    return !fails_at(error_message)
+}
+
+globalThis.matches_pattern = function matches_pattern(value = "", pattern = RegExp.prototype, error_message = "not matching regular expression") {
+    return pattern.test(value) ? "" : error_message
+}
+
+globalThis.is_url = function is_url(value = "", error_message = "not a valid url") {
     const is_valid_url = URL.parse(value) !== null
 
-    return is_valid_url
+    return is_valid_url ? "" : error_message
 }
 
-globalThis.is_number = function is_number(value = "") {
+globalThis.is_number = function is_number(value = "", error_message = "not a valid number") {
     const value_as_number = Number(value)
 
     const is_nan = value_as_number !== value_as_number
 
     const is_valid_number = !is_nan
 
-    return is_valid_number
+    return is_valid_number ? "" : error_message
 }
 
-globalThis.is_positive = function is_positive(value = "") {
-    if (!is_number(value))
-        return false
+globalThis.is_positive = function is_positive(value = "", error_message = "not a positive number") {
+    if (fails_at(is_number(value)))
+        return error_message
 
     const value_as_number = Number(value)
 
-    return value_as_number > 0
+    return value_as_number > 0 ? "" : error_message
 }
 
-globalThis.is_negative = function is_negative(value = "") {
-    return !is_positive(value)
+globalThis.is_negative = function is_negative(value = "", error_message = "not a negative number") {
+    return passes_at(is_positive(value)) ? error_message : ""
 }
 
-globalThis.is_zero = function is_zero(value = "") {
-    if (!is_number(value))
-        return false
+globalThis.is_zero = function is_zero(value = "", error_message = "not zero") {
+    if (fails_at(is_number(value)))
+        return error_message
 
     const value_as_number = Number(value)
 
-    return value_as_number === 0
+    return value_as_number === 0 ? "" : error_message
 }
 
-globalThis.is_number_between = function is_number_between(value = "", min = 0, max = 0) {
-    if (!is_number(value))
-        return false
+globalThis.is_number_between = function is_number_between(value = "", min = 0, max = 0, error_message = "not between number range") {
+    if (fails_at(is_number(value)))
+        return error_message
 
     const value_as_number = Number(value)
 
     const is_between_range = min <= value_as_number && value_as_number <= max
 
-    return is_between_range
+    return is_between_range ? "" : error_message
 }
 
-globalThis.is_date = function is_date(value = "") {
+globalThis.is_date = function is_date(value = "", error_message = "not a date") {
     const value_as_date = new Date(value)
 
     const date_as_ms = value_as_date.valueOf()
@@ -66,12 +74,12 @@ globalThis.is_date = function is_date(value = "") {
 
     const is_valid_date = !is_nan
 
-    return is_valid_date
+    return is_valid_date ? "" : error_message
 }
 
-globalThis.is_date_between = function is_date_between(value = "", min = new Date(), max = new Date()) {
-    if (!is_date(value))
-        return false
+globalThis.is_date_between = function is_date_between(value = "", min = new Date(), max = new Date(), error_message = "not between date range") {
+    if (fails_at(is_date(value)))
+        return error_message
 
     const min_ms = min.valueOf()
 
@@ -81,45 +89,51 @@ globalThis.is_date_between = function is_date_between(value = "", min = new Date
 
     const is_between_range = min_ms <= value_ms && value_ms <= max_ms
 
-    return is_between_range
+    return is_between_range ? "" : error_message
 }
 
-globalThis.is_text_between = function is_text_between(value = "", min = 0, max = 0) {
+globalThis.is_text_between = function is_text_between(value = "", min = 0, max = 0, error_message = "not between characters range") {
     const letters = value.trim().length
 
     const is_between_range = min <= letters && letters <= max
 
-    return is_between_range
+    return is_between_range ? "" : error_message
 }
 
-globalThis.is_equal = function is_equal(a = "", b = "") {
-    return a === b
+globalThis.is_text_outside = function is_text_outside(value = "", min = 0, max = 0, error_message = "not outside characters range") {
+    return passes_at(is_text_between(value, min, max)) ? error_message : ""
 }
 
-globalThis.is_email = function is_email(value = "") {
+globalThis.is_equal = function is_equal(a = "", b = "", error_message = "not equal") {
+    return a === b ? "" : error_message
+}
+
+globalThis.is_email = function is_email(value = "", error_message = "not email") {
     const [ name, domain, ...rest ] = value.split("@")
 
-    return !!name && !!domain && rest.length === 0
+    const valid_email = !!name && !!domain && rest.length === 0
+
+    return valid_email ? "" : error_message
 }
 
-globalThis.is_present = function is_present(value = "") {
-    return value.trim().length > 0
+globalThis.is_present = function is_present(value = "", error_message = "not present") {
+    return value.trim().length > 0 ? "" : error_message
 }
 
-globalThis.is_missing = function is_missing(value = "") {
-    return !is_present(value)
+globalThis.is_missing = function is_missing(value = "", error_message = "not missing") {
+    return passes_at(is_present(value)) ? error_message : ""
 }
 
-globalThis.includes_text = function includes_text(value = "", required = "") {
-    return value.includes(required)
+globalThis.includes_text = function includes_text(value = "", required = "", error_message = "does not include text") {
+    return value.includes(required) ? "" : error_message
 }
 
-globalThis.starts_with = function starts_with(value = "", required = "") {
-    return value.startsWith(required)
+globalThis.starts_with = function starts_with(value = "", required = "", error_message = "does not start with text") {
+    return value.startsWith(required) ? "" : error_message
 }
 
-globalThis.ends_with = function ends_with(value = "", required = "") {
-    return value.endsWith(required)
+globalThis.ends_with = function ends_with(value = "", required = "", error_message = "does not end with text") {
+    return value.endsWith(required) ? "" : error_message
 }
 
 globalThis.invalid = function invalid(fields = { field_name: [""] }, fields_to_check = ["*"]) {
@@ -134,9 +148,13 @@ globalThis.invalid = function invalid(fields = { field_name: [""] }, fields_to_c
         if (!fields_to_check.includes(name))
             continue
 
-        const errors = fields[name]
+        const field_errors = [""]
+        
+        field_errors.push(...fields[name])
 
-        const has_errors = errors.length > 0
+        const present_errors = field_errors.filter(Boolean)
+
+        const has_errors = present_errors.length > 0
 
         if (has_errors)
             return true

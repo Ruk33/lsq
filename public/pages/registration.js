@@ -21,13 +21,13 @@ function registration_set_username(username = "") {
 
     state.registration.fields.username = username
 
-    state.registration.errors.username = user_validate_username(username)
+    state.registration.errors.username = username_errors(username)
 }
 
 function registration_set_password(password = "") {
     state.registration.fields.password = password
 
-    state.registration.errors.password = user_validate_password(password)
+    state.registration.errors.password = password_errors(password)
 }
 
 function registration_set_confirm_password(confirm_password = "") {
@@ -35,14 +35,14 @@ function registration_set_confirm_password(confirm_password = "") {
 
     state.registration.fields.confirm_password = confirm_password
 
-    state.registration.errors.confirm_password = user_validate_confirm_password(password, confirm_password)
+    state.registration.errors.confirm_password = confirm_password_errors(password, confirm_password)
 }
 
 function registration_submit() {
     if (state.registration.submitting)
         return
 
-    state.registration.errors = user_validate(state.registration.fields)
+    state.registration.errors = user_errors(state.registration.fields)
 
     if (invalid(state.registration.errors))
         return

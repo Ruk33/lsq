@@ -11,7 +11,9 @@ function jokes_init() {
 }
 
 function request_more_jokes() {
-    if (state.jokes.request_status === pending)
+    const already_requesting_joke = state.jokes.request_status === pending
+
+    if (already_requesting_joke)
         return
 
     console.log("new joke being requested!")

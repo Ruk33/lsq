@@ -6,32 +6,40 @@ globalThis.user_fields = function user_fields() {
     }
 }
 
-globalThis.user_validate = function is_user_invalid(user = user_fields()) {
+globalThis.user_errors = function user_errors(user = user_fields()) {
     const errors = {
-        username: user_validate_username(user.username),
-        password: user_validate_password(user.password),
-        confirm_password: user_validate_confirm_password(user.password, user.confirm_password),
+        username: username_errors(user.username),
+        password: password_errors(user.password),
+        confirm_password: confirm_password_errors(user.password, user.confirm_password),
     }
 
     return errors
 }
 
-globalThis.user_validate_username = function user_validate_username(username = "") {
+globalThis.username_errors = function username_errors(username = "") {
+    const min_chars = 2
+
+    const max_chars = 8
+
     return [
-        is_present(username) ? "" : "The username is required!",
-        is_text_between(username, 2, 10) ? "" : "The username must be between 2 and 10 characters long",
-    ].filter(Boolean)
+        is_present(username, "The username is required"),
+        is_text_between(username, min_chars, max_chars, `The username must be between ${min_chars} and ${max_chars} characters long`),
+    ]
 }
 
-globalThis.user_validate_password = function user_validate_password(password = "") {
+globalThis.password_errors = function password_errors(password = "") {
+    const min_chars = 2
+
+    const max_chars = 10
+
     return [
-        is_present(password) ? "" : "The password is required!",
-        is_text_between(password, 2, 10) ? "" : "The password must be between 2 and 10 characters long",
-    ].filter(Boolean)
+        is_present(password, "The password is required"),
+        is_text_between(password, min_chars, max_chars, `The password must be between ${min_chars} and ${max_chars} characters long`)
+    ]
 }
 
-globalThis.user_validate_confirm_password = function user_validate_confirm_password(password = "", confirm_password = "") {
+globalThis.confirm_password_errors = function confirm_password_errors(password = "", confirm_password = "") {
     return [
-        is_equal(password, confirm_password) ? "" : "The passwords do not match",
-    ].filter(Boolean)
+        is_equal(password, confirm_password, "The passwords do not match"),
+    ]
 }
