@@ -317,7 +317,7 @@ function checkout_validate_card_expiry_mm_yy(card_expiry_mm_yy = "") {
     const valid_format = /^\d{2}\/\d{2}$/
 
     return [
-        matches_regexp(card_expiry_mm_yy, valid_format) ? "" : "The card expiry is incorrect. The format must be MM/YY"
+        matches_pattern(card_expiry_mm_yy, valid_format) ? "" : "The card expiry is incorrect. The format must be MM/YY"
     ].filter(Boolean)
 }
 
@@ -326,7 +326,7 @@ function checkout_validate_card_cvc(card_cvc = "") {
 
     return [
         is_present(card_cvc) ? "" : "Card CVC is required",
-        matches_regexp(card_cvc, valid_format) ? "" : "Card CVC must be 3 numbers"
+        matches_pattern(card_cvc, valid_format) ? "" : "Card CVC must be 3 numbers"
     ].filter(Boolean)
 }
 

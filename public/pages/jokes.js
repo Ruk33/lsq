@@ -23,7 +23,7 @@ function request_more_jokes() {
     fetch_json(
         "https://api.chucknorris.io/jokes/random", 
         {}, 
-        function(joke) {
+        function(joke = { value: "" }) {
             state.jokes.request_status = succeed
 
             add_jokes([joke.value])
