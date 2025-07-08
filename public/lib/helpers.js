@@ -2,6 +2,15 @@ globalThis.now = function now() {
     return Date.now()
 }
 
+globalThis.safe_html = function(html = "") {
+    return html
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;")
+}
+
 globalThis.do_nothing = function do_nothing() {
     
 }
