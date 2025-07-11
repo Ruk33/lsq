@@ -53,9 +53,9 @@ function update_element(parent = Element.prototype, new_content = Element.protot
 function render() {
     const updated_dom = document.createElement("div")
 
-    updated_dom.innerHTML = app()
+    updated_dom.innerHTML = html_to_draw()
 
-    update_element(window.application, updated_dom)
+    update_element(document.body, updated_dom)
 
     trigger_viewport()
 }

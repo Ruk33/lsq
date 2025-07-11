@@ -49,23 +49,20 @@ function link({ path = "", link_props = "", content = "" }) {
 function set_page_from_current_url() {
     clear_alive_requests()
 
-    state.page = ""
-    state.page_params = {}
-
     for (const path in state.pages) {
         const page_init = state.pages[path]
         const params = current_url_matches(path)
 
         if (params) {
-            state.page_params = params
-
-            page_init()
+            page_init(params)
 
             return
         }
     }
 
-    default_page_init()
+    const no_params = {}
+
+    default_page_init(no_params)
 }
 
 window.addEventListener("popstate", set_page_from_current_url)
