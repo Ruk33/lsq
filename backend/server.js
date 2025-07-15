@@ -1,3 +1,5 @@
+const http = require("http")
+
 require("../public/lib/helpers.js")
 
 require("../public/lib/validator.js")
@@ -6,9 +8,9 @@ require("../public/shared/user.js")
 
 require("../backend/models/user.js")
 
-const http = require("http")
+require("../backend/database.js")
 
-function handler() {
+async function handler() {
     return user_create({
         username: undefined,
         password: "",
