@@ -19,7 +19,6 @@ const state = {
 }
 
 function increase_number() {
-    console.log("asdasd")
     state.number++
 }
 
