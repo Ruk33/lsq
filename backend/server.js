@@ -1,16 +1,14 @@
 const http = require("http")
 
-require("../public/lib/server.js")
-
 require("../public/lib/helpers.js")
 
 require("../public/lib/validator.js")
 
 require("../public/shared/user.js")
 
-require("../backend/models/user.js")
-
 require("../backend/database.js")
+
+require("../backend/user.js")
 
 function get_params(request = Request.prototype) {
     return new Promise(function(resolve) {

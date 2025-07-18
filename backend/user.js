@@ -1,4 +1,4 @@
-async function user_create(user = user_fields()) {
+globalThis.server_create_user = async function server_create_user(user = user_fields()) {
     const errors = user_errors(user)
 
     if (invalid(errors))
@@ -12,5 +12,3 @@ async function user_create(user = user_fields()) {
 
     return new_user
 }
-
-share_function(user_create)
