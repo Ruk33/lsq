@@ -9,10 +9,6 @@ function request_was_aborted(request_status = idle) {
     return request_status !== pending
 }
 
-function response_to_json(response = Response.prototype) {
-    return response.json()
-}
-
 function fetch_json(url = "", options = {}, succeed_fn = do_nothing, error_fn = do_nothing) {
     const request_id = now()
 

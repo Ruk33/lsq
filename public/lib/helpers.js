@@ -1,3 +1,13 @@
+globalThis.response_to_json = function response_to_json(response = Response.prototype) {
+    return response.json()
+}
+
+globalThis.clone = function clone(value = {}) {
+    const cloned = JSON.parse(JSON.stringify(value))
+    
+    return cloned
+}
+
 globalThis.now = function now() {
     return Date.now()
 }
