@@ -14,8 +14,10 @@ function create_client_server_bridge_for(fn = function() {}) {
 function create_client_server_bridges() {
     const names = Object.keys(globalThis)
 
+    const prefix = "api_"
+
     for (const name of names) {
-        if (name.startsWith("server_")) {
+        if (name.startsWith(prefix)) {
             const fn = globalThis[name]
 
             create_client_server_bridge_for(fn)
