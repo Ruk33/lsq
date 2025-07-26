@@ -21,6 +21,15 @@ globalThis.safe_html = function(html = "") {
         .replaceAll("'", "&#039;")
 }
 
+globalThis.safe_sql = function(value = "") {
+    return value
+        .replace(/'/g, "''")
+        .replace(/"/g, '\\"')
+        .replace(/\\/g, '\\\\')
+        .replace(/\0/g, '\\0')
+        .replace(/\n/g, '\\n')
+}
+
 globalThis.do_nothing = function do_nothing() {
     
 }
