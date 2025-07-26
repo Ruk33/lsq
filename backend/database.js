@@ -77,7 +77,7 @@ globalThis.insert = function insert(table_name = "", record = {}, only_fields = 
     }).join(", ")
 
     const values = Object.values(record).map(function(value) {
-        const safe_value = typeof value === "string" ? `'${value}'` : value
+        const safe_value = typeof value === "string" ? `'${safe_sql(value)}'` : value
 
         return safe_value
     }).join(", ")
@@ -103,7 +103,7 @@ globalThis.find = function find(table_name = "", record = {}) {
     const filters = columns.map(function(column) {
         const value = record[column]
 
-        const safe_value = typeof value === "string" ? `'${value}'` : value
+        const safe_value = typeof value === "string" ? `'${safe_sql(value)}'` : value
 
         return `"${column}" = ${safe_value}`
     }).join(" and ")
@@ -119,7 +119,7 @@ globalThis.find_all = function find_all(table_name = "", record = {}, limit = 10
     const filters = columns.map(function(column) {
         const value = record[column]
 
-        const safe_value = typeof value === "string" ? `'${value}'` : value
+        const safe_value = typeof value === "string" ? `'${safe_sql(value)}'` : value
 
         return `"${column}" = ${safe_value}`
     }).join(" and ")
@@ -130,7 +130,7 @@ globalThis.find_all = function find_all(table_name = "", record = {}, limit = 10
 }
 
 globalThis.update = function update(table_name = "", record = {}, only_fields = ["*"]) {
-    const safe_id = typeof record.id === "string" ? `'${record.id}'` : record.id
+    const safe_id = typeof record.id === "string" ? `'${safe_sql(record.id)}'` : record.id
 
     const include_all_fields = only_fields[0] === "*"
     
@@ -152,7 +152,7 @@ globalThis.update = function update(table_name = "", record = {}, only_fields = 
     const assignments = Object.keys(record).map(function(column) {
         const value = record[column]
 
-        const safe_value = typeof value === "string" ? `'${value}'` : value
+        const safe_value = typeof value === "string" ? `'${safe_sql(value)}'` : value
 
         return `"${column}" = ${safe_value}`
     }).join(", ")
@@ -163,7 +163,7 @@ globalThis.update = function update(table_name = "", record = {}, only_fields = 
 }
 
 globalThis.destroy = async function destroy(table_name = "", record = {}) {
-    const safe_id = typeof record.id === "string" ? `'${record.id}'` : record.id
+    const safe_id = typeof record.id === "string" ? `'${safe_sql(record.id)}'` : record.id
 
     const sql = `delete from "${table_name}" where "id" = ${safe_id};`
 
