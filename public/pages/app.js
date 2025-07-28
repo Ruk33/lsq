@@ -1,44 +1,40 @@
 const state = {
     page: "",
 
-    number: 0,
-
     pages: {
         "/": function() {
+            state.page = "index"
             console.log("user navigated to /")
-
-            state.page = ""
         },
 
-        "/user/:user_id/update": function({ user_id = "" }) {
-            console.log(`user navigated to /user/${user_id}/update`)
-
+        "/user/:user_id/update": function(params) {
             state.page = "user_update"
-        },
+            console.log("user navigated to /user/:user_id/update", params)
+        }
     },
+
+    number: 0,
 }
 
 function increase_number() {
     state.number++
 }
 
-function number_component() {
-    return `
-        <div>
-            <div>number is: ${state.number}</div>
-            <button type="button" onclick="increase_number()">increase</button>
-        </div>`
-}
-
-function user_update_page() {
-    return `<div>user update page</div>`
+async function call_backend_function() {
+    console.log("calling api_create_user which is a function that lives in the backend")
+    const response = await api_create_user()
+    console.log("response", response)
 }
 
 function html_to_draw() {
-    switch (state.page) {
-        case "":
-            return `<div>hello world</div><div>${number_component()}</div>`
-        case "user_update":
-            return user_update_page()
-    }
+    return `
+        <div>
+            <div>you are in page: ${state.page}</div>
+            <div>number is: ${state.number}</div>
+            <button type="button" onclick="increase_number()">increase number</button>
+            <button type="button" onclick="call_backend_function()">call backend function</button>
+            <div>${link({ path: "/", content: "go to index" })}</div>
+            <div>${link({ path: "/user/42/update", content: "go to update user 42" })}</div>
+        </div>
+    `
 }

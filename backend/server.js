@@ -4,7 +4,9 @@ require("../public/lib/helpers.js")
 
 require("../public/lib/validator.js")
 
-require("../public/shared/user.js")
+require("../public/shared/user_form.js")
+
+require("../public/shared/api.js")
 
 require("../backend/database.js")
 
@@ -30,7 +32,7 @@ function disable_cors(response) {
     response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
 }
 
-async function main(request, response) {
+async function handle_request(request, response) {
     disable_cors(response)
 
     if (request.method === "OPTIONS") {
@@ -68,6 +70,6 @@ async function main(request, response) {
 
 const port = 3000
 
-http.createServer(main).listen(port, "localhost", function() {
+http.createServer(handle_request).listen(port, "localhost", function() {
     console.log(`server started. listening for requests at http://localhost:${port}`)
 })
