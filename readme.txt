@@ -63,7 +63,7 @@ HOW DOES IT LOOKS LIKE?
 
     // This function gets called automatically every time we need to 
     // draw/render the interface.
-    function app() {
+    function html_to_draw() {
         return my_button("red")
     }
     --
@@ -90,7 +90,7 @@ HOW DOES IT LOOKS LIKE?
         `
     }
 
-    function app() {
+    function html_to_draw() {
         return my_button("red")
     }
     --
@@ -167,7 +167,7 @@ HOW TO DO REQUESTS?
         ...
     }
 
-    function on_errror() {
+    function on_error() {
         ...
     }
     --
