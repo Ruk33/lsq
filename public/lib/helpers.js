@@ -3,9 +3,9 @@ globalThis.response_to_json = function response_to_json(response = Response.prot
 }
 
 globalThis.clone = function clone(value = {}) {
-    const cloned = JSON.parse(JSON.stringify(value))
-    
-    return cloned
+    const cloned = JSON.parse(JSON.stringify({ value }))
+
+    return cloned.value
 }
 
 globalThis.now = function now() {
