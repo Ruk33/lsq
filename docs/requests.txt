@@ -1,0 +1,66 @@
+how to perform requests (ajax calls)?
+    you can just simply use "fetch" but, there is also a helper function inside
+    `public/lib/request.js` which allows to ignore certain requests. this is
+    useful when we could possibly make many requests but we just only care about
+    the last one being made.
+
+    ```
+    const state = {
+        some_request_id: 0,
+    }
+
+    function make_request() {
+        // Ignore previous request.
+        ignore_request(state.some_request_id)
+
+        const api_url = "https://..."
+
+        const fetch_options = {}
+
+        // Assign new request id.
+        state.some_request_id = fetch_json(
+            api_url,
+            fetch_options,
+            on_success,
+            on_error
+        )
+    }
+
+    function on_success() {
+        ...
+    }
+
+    function on_error() {
+        ...
+    }
+    ```
+
+    by "ignoring" previous requests, we simply instruct the helper function to
+    not call "on_success" or "on_error" if we no longer care for it.
+
+    imagine we call "make_request" twice:
+
+    ```
+    state.some_request_id = 1
+
+    // ...
+
+    ignore_request(1) // ignore previous request, meaning,
+                      // when completing, don't call on_success
+                      // nor on_error for this one
+
+    state.some_request_id = 2
+    ```
+
+    if we don't ignore the first request (id = 1) we will call `on_success` or
+    `on_error` twice. but, if we ignore previous requests (id = 1), the helper
+    functions knows that we don't care about the first request (id = 1) and when
+    completed, it won't call `on_success` nor `on_error` for it. when the second
+    request completes, since we are still interested in this request, the helper
+    function will call `on_success` or `on_error`.
+
+navigation
+    when the user navigates to a page, the library in charge of dealing with the
+    navigation will automatically clear all pending request. this is useful
+    because when the user navigates away we usually want to ignore the request
+    we have made while the user was in the previous page.

@@ -1,0 +1,39 @@
+how does the application gets rendered/drawn?
+    lsq takes the same approach as video games. it renders/draws the ui at 60
+    frames per second. the function `html_to_draw` will get executed to know
+    which html should be render.
+
+safety considerations
+    no escape gets performed automatically. you need to do it manually whenever
+    it's required. for instance, having something like:
+
+    ```
+    const state = {
+        username: "",
+    }
+
+    function html_to_draw() {
+        return `
+            <div>
+                <div>username is: ${state.username}</div>
+                <input type="text" oninput="state.username = event.target.value" value="${state.username}" />
+            </div>
+        `
+    }
+    ```
+
+    could be potentially risky. if `username` contains some html, it will get
+    treated as such, leaving your application open to xss attacks.
+
+    a safer option would be to escape the values:
+
+    ```
+    function html_to_draw() {
+        return `
+            <div>
+                <div>username is: ${state.username}</div>
+                <input type="text" oninput="state.username = safe_html(event.target.value)" value="${state.username}" />
+            </div>
+        `
+    }
+    ```

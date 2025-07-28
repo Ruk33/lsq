@@ -1,0 +1,11 @@
+why not npm?
+    npm can have downtime, which means if you deploy through ci, you will have
+    to download all the dependencies but you won't be able to do so. instead,
+    why not include the dependencies directly in your project. everyone will
+    have the same version and you won't need an external service to download it.
+    it's just a matter of practicality.
+
+why is the documentation in this format?
+    text files are universal, you can read the documentation hopefully in any
+    device and it should look fine. more importantly, you can read this
+    documentation even if you don't have internet, which is super important.

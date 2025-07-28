@@ -1,0 +1,74 @@
+how to do validation?
+    for form validation you can use the available validator functions found in
+    `public/lib/validator.js`
+
+    the basics steps are:
+
+    - define fields, for example:
+
+    ```
+    const state = {
+        login_fields: { username: "", password: "" },
+    }
+    ```
+
+    - with these fields, we need a place to store errors:
+
+    ```
+    const state = {
+        login_fields: ...,
+        login_errors: { username: [""], password: [""] },
+    }
+    ```
+
+    - define the validation rules. these are simple functions that return error
+      messages when the field is not valid. these functions can be placed in
+      `public/shared` allowing the frontend and the backend to make use of it:
+
+    ```
+    globalThis.username_errors = function username_errors(username = "") {
+        return [
+            is_present(username, "The username is required"),
+            is_text_between(username, 2, 8, "The username must be between 2 and 8 characters long"),
+        ]
+    }
+    ```
+
+    lsq provide several validations at `public/lib/validator.js`. you are more
+    than welcome to add more if you need additional validations.
+
+    note: "globalThis.username_errors" is only required if you intend to use
+    this function in both the frontend and the backend (which, is encouraged)
+    if you only want this function in the frontend, you don't need this
+    assignment.
+
+    - you can then validate and check if each field is valid:
+
+    ```
+    state.login_errors.username = username_errors(state.login_fields.username)
+    ```
+
+    - and finally, check if the entire set is valid/invalid:
+
+    ```
+    function login_errors(fields) {
+        const errors = {
+            username: username_errors(fields.username),
+            password: password_errors(fields.password),
+        }
+
+        return errors
+    }
+
+
+    // Get the errors
+    state.login_errors = login_errors(state.login_fields)
+
+    if (valid(state.login_errors)) {
+        console.log("all fields are valid!")
+    }
+
+    if (invalid(state.login_errors)) {
+        console.log("we have errors!")
+    }
+    ```

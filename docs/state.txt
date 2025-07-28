@@ -1,0 +1,114 @@
+how to deal with state?
+    each application will have it's own state. meaning, some data we would like
+    to keep around and update while the user uses the application. for instance,
+    we could store the current user logged in, perhaps we could store what
+    modals are open and which ones are closed, etc. in lsq, we deal with state
+    using a global variable called `state`. this has many advantages, such as:
+
+    - you can access the state from any function without special treatments,
+      it's just a global variable
+    - you can update the state from any function
+    - you can update the state without any special treatments. if you update the
+      global variable, the application will know about it and the ui will be
+      displayed/render accordingly
+    - no boilerplate, it's just a global variable
+
+    as mentioned, you just need to define a new global variable for it called
+    `state`, like:
+
+    ```
+    const state = {
+        number: 0,
+    }
+
+    function html_to_draw() {
+        return `<div>the number is: ${state.number}</div>`
+    }
+    ```
+
+    if you would like to upadte the state, you can:
+
+    ```
+    const state = {
+        number: 0,
+    }
+
+    function increase_number() {
+        state.number++
+    }
+
+    function html_to_draw() {
+        return `
+            <div>
+                <div>the number is: ${state.number}</div>
+                <button onclick="increase_number()">update number</button>
+            </div>
+        `
+    }
+    ```
+
+    notice how this will render a button that, when the user clicks on it, it
+    will increase the number by 1.
+
+    or, if you feel an entire function is not required, you can even do:
+
+    ```
+    const state = {
+        number: 0,
+    }
+
+    function html_to_draw() {
+        return `
+            <div>
+                <div>the number is: ${state.number}</div>
+                <button onclick="state.number++">update number</button>
+            </div>
+        `
+    }
+    ```
+
+structure
+    if you want, you could store everything in one level, like:
+
+    ```
+    const state = {
+        registration_username: "",
+        registration_password: "",
+        dashboard_confirmation_modal_visible: false,
+        ...
+    }
+    ```
+
+    a suggested approach thought, is to group fields by page:
+
+    ```
+    const state = {
+        registration: {
+            username: "",
+            password: "",
+        },
+        dashboard: {
+            confirmation_modal_visible: false,
+        },
+        ...
+    }
+    ```
+
+    this way is clearer but more importantly, it's easier to reset state.
+    usually, when a user navigates to a page, you want to start with some
+    initial values predefined, which you can do with:
+
+    ```
+    const state = {
+        registration: ...,
+        dashboard: dashboard_state(),
+        ...
+    }
+
+    function dashboard_state() {
+        return { confirmation_modal_visible: false, }
+    }
+    ```
+
+    so when a user navigates to the dashboard, you can
+    `state.dashboard = dashboard_state()` to reset the state.

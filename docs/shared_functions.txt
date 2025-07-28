@@ -1,0 +1,63 @@
+shared functions
+    sometimes you need to share functions between the backend and the frontend.
+    a good example of this could be the logic for form validation. for this,
+    you can just put the code you would like to share in public/shared. again,
+    this is intended for functions that can be used in both, the backend and the
+    frontend.
+
+calling backend functions in the frontend
+    in order to do this, usually you need to define an endpoint, or a route in
+    your backend that the frontend can later consume through an ajax call. this
+    works, but it's boring code that we have to write. wouldn't it be nice if we
+    could just call functions living in the backend directly from the frontend?
+    this is where "bridges" comes in. i think this is the only new concept that
+    lsq introduces but it's quite simple.
+
+    let's say we have the following function in the backend:
+
+    ```
+    globalThis.api_say_hello = function api_say_hello() {
+        log_this_call_in_the_database()
+        console.log("hello")
+    }
+    ```
+
+    we clearly can't use this function directly in the frontend because it seems
+    to be using the database, something that only lives in the server.
+    traditionally, we would have to do something like:
+
+    ```
+    post("/say_hello", function() {
+        api_say_hello()
+    })
+    ```
+
+    but with bridges, we don't have to do any of that. we can literally do
+    `api_say_hello()` in the frontend!
+
+    the way this works is quite simple. `public/lib/bridges.js` will replace the
+    real backend functions with ajax calls. as simple as that. so in the
+    browser, instead of having the real function, meaning:
+
+    ```
+    globalThis.api_say_hello = function api_say_hello() {
+        log_this_call_in_the_database()
+        console.log("hello")
+    }
+    ```
+
+    we will have:
+
+    ```
+    globalThis.api_say_hello = function api_say_hello() {
+        return fetch("/api/api_say_hello", {
+            method: "post",
+            body: ...,
+        })
+    }
+    ```
+
+    giving you the illusion that you are using the real backend function but in
+    reality it's just an ajax call. this is great because all the manual work of
+    defining routes/endpoints now gets done automatically! this ajax call is a
+    special call that the server knows how to handle.

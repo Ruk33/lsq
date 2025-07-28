@@ -1,0 +1,32 @@
+how to define routes?
+    by default, the navigation implementation will look for a field `pages` in
+    your state. `pages` contains the paths/routes and the functions to call when
+    the user navigates to such pages. these functions will be called with the
+    parsed url parameters.
+
+    ```
+    const state = {
+        pages: {
+            "/": function_to_call_when_user_navigates_this_page,
+            "/user/:user_id/update": update_user,
+        },
+    }
+    ```
+
+    if the user navigates to "/user/42/update", the function `update_user` will
+    be called with a parameter `{ user_id: "42" }`
+
+    if no page matches (404), the function `default_page_init` will be called.
+
+    note: for now, the navigation gets done using the "#" trick. i don't quite
+    like it but, it works nicely for html pages without having to set up a
+    server to serve these files.
+
+how to navigate?
+    you can use the `link` component, which is just a button.
+
+    ```
+    link({ path: "/user/42/update", content: "update user" })
+    ```
+
+    or, you can programmatically navigate with `navigate_to("/user/42/update")`

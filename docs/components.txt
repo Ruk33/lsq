@@ -1,0 +1,45 @@
+how to write components?
+    components are shared pieces of ui that you can reuse in your application.
+    for example, modals, alerts, buttons, etc. having said that, we know that
+    components are not special at all. in order to create a "component" you
+    just need to create a function that returns some html as string.
+
+    ```
+    function my_component() {
+        return `<div>this is a component!</div>`
+    }
+    ```
+
+how to pass properties to components?
+    pass properties like a parameters like you would do with any other function.
+
+    ```
+    function my_component(color = "red") {
+        return `<div style="color: ${color};">this is a component!</div>`
+    }
+    ```
+
+how can i pass functions or deal with events in components?
+    you can either pass the code you would like to run for each event like:
+
+    ```
+    function my_component(on_click = "") {
+        return `<button onclick="${on_click}">this is a component!</button>`
+    }
+    ```
+
+    or, you can accept a string of properties for the entire element:
+
+    ```
+    function my_component(props = "") {
+        return `<button ${props}>this is a component!</button>`
+    }
+    ```
+
+    and then use it like:
+
+    ```
+    my_component(`onclick="my_function()"`)
+    ```
+
+    it depends on your use case. if you are in doubt, go with the first example.
